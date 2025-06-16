@@ -1,0 +1,1 @@
+print("BUG feat hatsune miku")
