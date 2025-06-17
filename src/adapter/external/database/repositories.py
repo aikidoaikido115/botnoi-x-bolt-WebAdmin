@@ -1,33 +1,33 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
-from domain.model_entities.database import User, Command
+from domain.model_entities.database import Admin, Command
 from typing import List
-from domain.interfaces.database import UserRepositoryInterface, CommandRepositoryInterface
+from domain.interfaces.database import AdminRepositoryInterface, CommandRepositoryInterface
 
-class UserRepository(UserRepositoryInterface):
+class AdminRepositoryAdapter(AdminRepositoryInterface):
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def save(self, user: User) -> User:
+    async def save(self, admin: Admin) -> Admin:
         try:
-            self.db.add(user)
+            self.db.add(admin)
             await self.db.commit()
-            await self.db.refresh(user)
-            return user
+            await self.db.refresh(admin)
+            return admin
         except Exception as e:
             await self.db.rollback()
             raise e
 
-    async def find_by_id(self, id: str) -> User:
-        result = await self.db.execute(select(User).filter(User.id == id))
+    async def find_by_name(self, admin_name: str) -> Admin:
+        result = await self.db.execute(select(Admin).filter(Admin.admin_name == admin_name))
         return result.scalars().first()
 
-    async def get_all(self) -> List[User]:
-        result = await self.db.execute(select(User))
+    async def get_all(self) -> List[Admin]:
+        result = await self.db.execute(select(Admin))
         return result.scalars().all()
     
-class CommandRepository(CommandRepositoryInterface):
+class CommandRepositoryAdapter(CommandRepositoryInterface):
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -41,17 +41,17 @@ class CommandRepository(CommandRepositoryInterface):
             await self.db.rollback()
             raise e
         
-    async def find_by_user_id(self, user_id: str) -> Command:
-        result = await self.db.execute(select(Command).filter(Command.user_id == user_id))
+    async def find_by_admin_id(self, admin_id: str) -> Command:
+        result = await self.db.execute(select(Command).filter(Command.admin_id == admin_id))
         return result.scalars().first()
     
     async def get_all(self) -> List[Command]:
         result = await self.db.execute(select(Command))
         return result.scalars().all()
     
-    async def delete_all_user_command(self, user_id: str) -> List[Command]:
+    async def delete_all_admin_command(self, admin_id: str) -> List[Command]:
         try:
-            await self.db.execute(delete(Command).where(Command.user_id == user_id))
+            await self.db.execute(delete(Command).where(Command.admin_id == admin_id))
             await self.db.commit()
         except Exception as e:
             await self.db.rollback()

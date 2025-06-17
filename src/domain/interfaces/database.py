@@ -1,25 +1,25 @@
 from abc import ABC, abstractmethod
 from typing import List
-from src.domain.model_entities.database import (
-    User,
+from domain.model_entities.database import (
+    Admin,
     Command
 )
 
-class UserRepositoryInterface(ABC):
+class AdminRepositoryInterface(ABC):
     @abstractmethod
-    async def save(self, user: User) -> User:
+    async def save(self, admin: Admin) -> Admin:
         pass
     
     @abstractmethod 
-    async def find_by_id(self, id: str) -> User:
+    async def find_by_name(self, admin_name: str) -> Admin:
         pass
 
     @abstractmethod
-    async def get_all(self) -> List[User]:
+    async def get_all(self) -> List[Admin]:
         pass
 
     # @abstractmethod
-    # async def get_by_id(self, id: str) -> User:
+    # async def get_by_id(self, id: str) -> Admin:
     #     pass
 
 class CommandRepositoryInterface(ABC):
@@ -28,15 +28,15 @@ class CommandRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def find_by_user_id(self, user_id: str) -> Command:
+    async def find_by_admin_id(self, admin_id: str) -> Command:
         pass
 
     @abstractmethod
     async def get_all(self) -> List[Command]:
         pass
-    async def delete_all_user_command(self, user_id: str) -> List[Command]:
+    async def delete_all_admin_command(self, admin_id: str) -> List[Command]:
         pass
 
     # @abstractmethod
-    # async def get_by_user_id(self, id: str) -> Command:
+    # async def get_by_admin_id(self, id: str) -> Command:
     #     pass
