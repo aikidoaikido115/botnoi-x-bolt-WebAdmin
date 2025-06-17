@@ -1,19 +1,32 @@
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
+const inter = Inter({ subsets: ['latin'] });
 
-import "./globals.css";
-
-
+export const metadata: Metadata = {
+  title: 'BookingHub - LINE Booking System',
+  description: 'Complete booking system for small businesses with LINE integration',
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className=''
-      >
-        {children}
+      <body className={inter.className}>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <Sidebar/>
+          <main className="pt-16">
+            <div className="p-6 pl-60">
+              {children}
+            </div>
+          </main>
+        </div>
       </body>
     </html>
   );
