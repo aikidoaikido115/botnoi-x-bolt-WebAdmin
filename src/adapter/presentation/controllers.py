@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from adapter.external.database.postgres import get_db
 from adapter.external.database.repositories import AdminRepositoryAdapter
-from application.admin_service.service import AdminService
+from application.admin_service.register import RegisterService
 # from app.domain.database.models import User, Command
 # from typing import List, Dict, Any
 
@@ -37,7 +37,7 @@ async def create_admin(request: Request, db=Depends(get_db)):
         store_id = data.get("store_id")
 
         repo = AdminRepositoryAdapter(db)
-        service = AdminService(repo)
+        service = RegisterService(repo)
         return await service.create_admin(email, admin_name, admin_password, store_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

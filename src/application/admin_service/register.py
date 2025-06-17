@@ -11,7 +11,7 @@ from typing import Optional, List
 from uuid import uuid4
 from passlib.context import CryptContext
 
-class AdminService:
+class RegisterService:
     def __init__(self, admin_repo: AdminRepositoryInterface):
         self.admin_repo = admin_repo
 
