@@ -4,28 +4,35 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = "users"
+class Admin(Base):
+    __tablename__ = "admins"
     id = Column(String, primary_key=True, index=True)
+    email = Column(String)
+    admin_name = Column(String)
+    admin_password = Column(String)
+    store_id = Column(String)
     
-    commands = relationship("Command", back_populates="user")
+    commands = relationship("Command", back_populates="admin")
     
     def to_dict(self):
         return {
             "id": self.id,
+            "email": self.email,
+            "admin_name": self.admin_name,
+            "admin_password": self.admin_password
         }
 
 class Command(Base):
     __tablename__ = "commands"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    admin_id = Column(String, ForeignKey("admins.id"), nullable=False)
     name = Column(String)
 
-    user = relationship("User", back_populates="commands")
+    admin = relationship("Admin", back_populates="commands")
 
     def to_dict(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
+            "admin_id": self.admin_id,
             "name": self.name
         }
