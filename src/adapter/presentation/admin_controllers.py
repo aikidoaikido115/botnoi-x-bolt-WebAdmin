@@ -22,13 +22,13 @@ from application.admin_service.login import LoginService
 # from app.infrastructure.yolo_crop.ai_license_plate import YoloCropAdapter
 # from app.infrastructure.morphological import MorphologicalAdapter
 
-router = APIRouter()
+admin_router = APIRouter()
 
-@router.get("/")
+@admin_router.get("/")
 async def hello():
     return {"message":"Welcome to Botnoi x Bolt"}
 
-@router.post("/admins/register")
+@admin_router.post("/admins/register")
 async def create_admin(request: Request, db=Depends(get_db)):
     try:
         data = await request.json()
@@ -45,7 +45,7 @@ async def create_admin(request: Request, db=Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
     
 
-@router.post("/admins/login")
+@admin_router.post("/admins/login")
 async def admin_login(request: Request, db=Depends(get_db)):
     data = await request.json()
     admin_name = data.get("admin_name")
