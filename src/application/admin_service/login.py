@@ -4,11 +4,14 @@ from datetime import datetime, timedelta ,timezone
 from domain.interfaces.database import AdminRepositoryInterface
 from domain.model_entities.database import Admin
 
+from domain.interfaces.auth import AuthInterface
+
 from typing import Optional
 from passlib.context import CryptContext
+import os
 
 class LoginService:
-    def __init__(self, admin_repo: AdminRepositoryInterface, jwt_secret: str, jwt_algorithm: str = "HS256"):
+    def __init__(self, admin_repo: AdminRepositoryInterface, jwt_secret: AuthInterface, jwt_algorithm: str = "HS256"):
         self.admin_repo = admin_repo
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.jwt_secret = jwt_secret # secret key ENV.
@@ -33,6 +36,7 @@ class LoginService:
         }
 
         # encode เป็น JWT token
-        token = jwt.encode(payload, self.jwt_secret, algorithm=self.jwt_algorithm)
+        jwt_secret_str = str(self.jwt_secret.get_jwt_secret())
+        token = jwt.encode(payload, jwt_secret_str, algorithm=self.jwt_algorithm)
         return token # login สำเร็จส่ง token 
 

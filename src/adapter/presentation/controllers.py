@@ -10,6 +10,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from adapter.external.database.postgres import get_db
 from adapter.external.database.repositories import AdminRepositoryAdapter
+from adapter.external.auth import AuthAdapter
+
 from application.admin_service.register import RegisterService
 # from app.domain.database.models import User, Command
 # from typing import List, Dict, Any
@@ -53,7 +55,8 @@ async def admin_login(request: Request, db=Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid admin_name ")
 
     repo = AdminRepositoryAdapter(db)
-    auth_service = LoginService(repo)
+    auth_adapter_instance = AuthAdapter()
+    auth_service = LoginService(repo, jwt_secret=auth_adapter_instance)
 
     token = await auth_service.login(admin_name, admin_password)
     if not token:
