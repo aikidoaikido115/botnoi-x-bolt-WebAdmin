@@ -19,10 +19,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <Sidebar/>
-          <main className="pt-16">
-            <div className="p-6 pl-60">
+          <main className="">
+            <div className="w-full">
               {children}
             </div>
           </main>
@@ -31,3 +29,4 @@ export default function RootLayout({
     </html>
   );
 }
+
