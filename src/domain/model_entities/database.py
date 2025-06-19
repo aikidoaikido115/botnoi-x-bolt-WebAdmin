@@ -11,9 +11,10 @@ class Admin(Base):
     email = Column(String)
     admin_name = Column(String)
     admin_password = Column(String)
-    store_id = Column(String)
+
+    store_id = Column(String, ForeignKey("stores.id"), nullable=False)
     
-    # commands = relationship("Command", back_populates="admin")
+    stores = relationship("Store", back_populates="admins")
     
     def to_dict(self):
         return {
@@ -31,6 +32,7 @@ class Store(Base):
     created_at = Column(DateTime, default=func.now())
 
     services = relationship("Service", back_populates="stores")
+    admins = relationship("Admin", back_populates="stores")
 
     def to_dict(self):
         return {
@@ -62,17 +64,3 @@ class Service(Base):
             "description":self.description,
             "store_id": self.store_id
         }
-# class Command(Base):
-#     __tablename__ = "commands"
-#     id = Column(Integer, primary_key=True, index=True)
-#     admin_id = Column(String, ForeignKey("admins.id"), nullable=False)
-#     name = Column(String)
-
-#     admin = relationship("Admin", back_populates="commands")
-
-#     def to_dict(self):
-#         return {
-#             "id": self.id,
-#             "admin_id": self.admin_id,
-#             "name": self.name
-#         }
