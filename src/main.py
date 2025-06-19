@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from adapter.presentation.admin_controllers import admin_router
 from adapter.presentation.store_controller import store_router
+from adapter.presentation.service_controller import service_router
 
 from adapter.external.database.postgres import engine
 from domain.model_entities.database import Base
@@ -18,5 +19,7 @@ async def lifespan(app: FastAPI):
     await engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
+
 app.include_router(admin_router)
 app.include_router(store_router)
+app.include_router(service_router)

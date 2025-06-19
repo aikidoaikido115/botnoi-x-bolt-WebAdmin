@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Float, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -30,12 +30,37 @@ class Store(Base):
     description = Column(String)
     created_at = Column(DateTime, default=func.now())
 
+    services = relationship("Service", back_populates="stores")
+
     def to_dict(self):
         return {
             "id": self.id,
             "store_name": self.store_name,
             "description": self.description,
             "created_at": self.created_at
+        }
+    
+
+class Service(Base):
+    __tablename__ = "services"
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String)
+    duration_minutes = Column(Integer)
+    prices = Column(Float)
+    description = Column(String)
+
+    store_id = Column(String, ForeignKey("stores.id"), nullable=False)
+
+    stores = relationship("Store", back_populates="services")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "duration_minutes": self.duration_minutes,
+            "prices": self.prices,
+            "description":self.description,
+            "store_id": self.store_id
         }
 # class Command(Base):
 #     __tablename__ = "commands"

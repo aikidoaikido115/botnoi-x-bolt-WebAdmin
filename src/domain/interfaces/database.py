@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from domain.model_entities.database import (
     Admin,
-    Store
-    # Command
+    Store,
+    Service
 )
 
 class AdminRepositoryInterface(ABC):
@@ -49,21 +49,31 @@ class StoreRepositoryInterface(ABC):
         pass
 
 
-# class CommandRepositoryInterface(ABC):
-#     @abstractmethod
-#     async def save(self, command: Command) -> Command:
-#         pass
+class ServiceRepositoryInterface(ABC):
+    @abstractmethod
+    async def save(self, service: Store) -> Service:
+        pass
 
-#     @abstractmethod
-#     async def find_by_admin_id(self, admin_id: str) -> Command:
-#         pass
+    # @abstractmethod 
+    # async def find_by_name(self, service_name: str) -> Service:
+    #     pass
 
-#     @abstractmethod
-#     async def get_all(self) -> List[Command]:
-#         pass
-#     async def delete_all_admin_command(self, admin_id: str) -> List[Command]:
-#         pass
+    @abstractmethod 
+    async def find_by_id(self, service_id: str) -> Service:
+        pass
+
+    @abstractmethod
+    async def get_all(self) -> List[Service]:
+        pass
+    
+    @abstractmethod
+    async def update_by_id(self, service_id: str, update_data: dict) -> Service:
+        pass
 
     # @abstractmethod
-    # async def get_by_admin_id(self, id: str) -> Command:
+    # async def delete_by_name(self, service_name: str) -> Optional[Service]:
     #     pass
+
+    @abstractmethod
+    async def delete_by_id(self, service_id: str) -> Optional[Service]:
+        pass
