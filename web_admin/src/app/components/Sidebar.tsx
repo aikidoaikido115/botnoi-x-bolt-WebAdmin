@@ -49,16 +49,16 @@ const sidebarItems = [
     href: '/line-preview',
     icon: MessageSquare,
   },
-  {
-    title: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3,
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-  },
+  // {
+  //   title: 'Analytics',
+  //   href: '/analytics',
+  //   icon: BarChart3,
+  // },
+  // {
+  //   title: 'Settings',
+  //   href: '/settings',
+  //   icon: Settings,
+  // },
 ];
 
 export function Sidebar() {
