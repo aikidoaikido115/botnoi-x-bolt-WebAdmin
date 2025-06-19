@@ -10,7 +10,8 @@ import {
   Clock,
   MessageSquare,
   Settings,
-  BarChart3
+  BarChart3,
+  ShoppingBag
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -27,7 +28,7 @@ const sidebarItems = [
   {
     title: 'Services',
     href: '/services',
-    icon: Scissors,
+    icon: ShoppingBag,
   },
   {
     title: 'Customers',

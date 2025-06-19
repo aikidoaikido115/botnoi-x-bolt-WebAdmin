@@ -2,7 +2,7 @@
 // pages/dashboard.tsx (or app/dashboard/page.tsx for App Router)
 import { useState, useEffect, ReactNode } from 'react';
 import { Calendar, Users, Scissors, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/(main)/components/Card';
 
 // Types
 interface ComponentProps {

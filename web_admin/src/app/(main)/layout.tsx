@@ -1,6 +1,6 @@
 // src/app/(main)/layout.tsx
-import { Navbar } from '../components/Navbar';
-import { Sidebar } from '../components/Sidebar';
+import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
 
 export default function MainLayout({
     children,

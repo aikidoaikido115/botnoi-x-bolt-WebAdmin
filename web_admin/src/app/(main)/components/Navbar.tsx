@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
-import { Menu, User, Bell, Settings, X } from 'lucide-react';
+import { Menu, User, Bell, Settings as SettingsIcon, X, LogOut } from 'lucide-react';
 
 // Types
 interface ButtonProps {
@@ -219,17 +219,23 @@ export function Navbar() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <User className="mr-2 h-4 w-4" />
-                                <span>Profile</span>
+                                <Link href="/profile" className="flex items-center">
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>Profile</span>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
+                                <Link href="/settings" className="flex items-center">
+                                    <SettingsIcon className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                {/* TODO: Implement logout */}
-                                Log out
+                                <Link href="/register" className="flex items-center">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Log out</span>
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
