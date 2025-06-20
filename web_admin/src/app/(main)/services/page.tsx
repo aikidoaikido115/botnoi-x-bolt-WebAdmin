@@ -115,12 +115,12 @@ export default function ServicesPage() {
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingService(null)}>
+            <Button onClick={() => setEditingService(null)} className='bg-black text-white hover:bg-gray-600 '>
               <Plus className="mr-2 h-4 w-4" />
               Add Service
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] bg-white">
             <DialogHeader>
               <DialogTitle>
                 {editingService ? 'Edit Service' : 'Add New Service'}
@@ -132,14 +132,15 @@ export default function ServicesPage() {
                 }
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
+            <div className="grid gap-4 py-4 ">
+              <div className="grid gap-2" >
                 <Label htmlFor="name">Service Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   placeholder="e.g., Hair Cut"
+                  className='border-1 border-gray-200'
                 />
               </div>
               <div className="grid gap-2">
@@ -149,6 +150,7 @@ export default function ServicesPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Brief description of the service"
+                  className='border-1 border-gray-200'
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -160,6 +162,7 @@ export default function ServicesPage() {
                     value={formData.duration}
                     onChange={(e) => setFormData({...formData, duration: e.target.value})}
                     placeholder="30"
+                    className='border-1 border-gray-200'
                   />
                 </div>
                 <div className="grid gap-2">
@@ -170,20 +173,21 @@ export default function ServicesPage() {
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: e.target.value})}
                     placeholder="150"
+                    className='border-1 border-gray-200'
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value: any) => setFormData({...formData, category: value})}>
-                  <SelectTrigger>
+                <Select value={formData.category} onValueChange={(value: any) => setFormData({...formData, category: value})} >
+                  <SelectTrigger className='border-1 border-gray-200'>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ผู้ชาย">ผู้ชาย</SelectItem>
-                    <SelectItem value="ผู้หญิง">ผู้หญิง</SelectItem>
-                    <SelectItem value="สีผม">สีผม</SelectItem>
-                    <SelectItem value="ทรีทเมนต์">ทรีทเมนต์</SelectItem>
+                  <SelectContent className='bg-white border-1 border-gray-100'>
+                    <SelectItem value="ผู้ชาย" className='hover:bg-gray-100'>ผู้ชาย</SelectItem>
+                    <SelectItem value="ผู้หญิง" className='hover:bg-gray-100'>ผู้หญิง</SelectItem>
+                    <SelectItem value="สีผม" className='hover:bg-gray-100'>สีผม</SelectItem>
+                    <SelectItem value="ทรีทเมนต์" className='hover:bg-gray-100'>ทรีทเมนต์</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -195,14 +199,15 @@ export default function ServicesPage() {
                   value={formData.promotionPrice}
                   onChange={(e) => setFormData({...formData, promotionPrice: e.target.value})}
                   placeholder="120"
+                  className='border-1 border-gray-200'
                 />
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 bg-white">
                 <Switch
                   id="isActive"
                   checked={formData.isActive}
                   onCheckedChange={(checked: any) => setFormData({...formData, isActive: checked})}
-                />
+            />
                 <Label htmlFor="isActive">Active Service</Label>
               </div>
             </div>
@@ -210,7 +215,7 @@ export default function ServicesPage() {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>
+              <Button onClick={handleSubmit} color='white' className='bg-black text-white'>
                 {editingService ? 'Update' : 'Create'} Service
               </Button>
             </DialogFooter>
@@ -218,14 +223,14 @@ export default function ServicesPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {services.map((service) => (
-          <Card key={service.id} className="relative">
+          <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-2">
                   <Scissors className="h-5 w-5 text-blue-600" />
-                  <CardTitle className="text-lg">{service.name}</CardTitle>
+                  <CardTitle className="text-lg font-semibold">{service.name}</CardTitle>
                 </div>
                 <div className="flex space-x-1">
                   <Button
@@ -245,14 +250,14 @@ export default function ServicesPage() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant="secondary">{service.category}</Badge>
-                <Badge variant={service.isActive ? "default" : "secondary"}>
-                  {service.isActive ? 'Active' : 'Inactive'}
+                <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>
+                <Badge className={service.isActive ? "bg-black text-white" : "bg-gray-100 text-black"} >
+                  {service.isActive ? 'Active' : 'Inactive'} 
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-gray-500 mb-4">
                 {service.description}
               </p>
               <div className="space-y-2">
