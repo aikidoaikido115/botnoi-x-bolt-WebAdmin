@@ -157,7 +157,7 @@ export function Navbar() {
 
     return (
         <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-            <div className="flex h-16 items-center px-4">
+            <div className="flex h-16 items-center px-4 bg-white" >
                 <div className="flex items-center space-x-4">
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
