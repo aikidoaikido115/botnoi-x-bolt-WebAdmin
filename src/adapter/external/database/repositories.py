@@ -4,14 +4,18 @@ from sqlalchemy import delete
 from domain.model_entities.database import (
     Admin,
     Store,
-    Service
+    Service,
+    Payment
 )
 from typing import List, Optional
 from domain.interfaces.database import (
     AdminRepositoryInterface,
     StoreRepositoryInterface,
-    ServiceRepositoryInterface
+    ServiceRepositoryInterface,
+    PaymentRepositoryInterface
 )
+
+from datetime import datetime, timedelta
 
 class AdminRepositoryAdapter(AdminRepositoryInterface):
     def __init__(self, db: AsyncSession):
@@ -149,6 +153,61 @@ class ServiceRepositoryAdapter(ServiceRepositoryInterface):
             await self.db.commit()
 
             return service
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+class PaymentRepositoryAdapter(PaymentRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
+    
+    async def save(self, payment: Payment) -> Payment:
+        try:
+            self.db.add(payment)
+            await self.db.commit()
+            await self.db.refresh(payment)
+            return payment
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def find_by_id(self, payment_id: str) -> Payment:
+        result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+        return result.scalars().first()
+    
+    async def get_all(self) -> List[Payment]:
+        result = await self.db.execute(select(Payment))
+        return result.scalars().all()
+    
+    async def update_status_by_id(self, payment_id: str, update_data: dict) -> Payment:
+        try:
+            result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+            payment = result.scalars().first()
+            if not payment:
+                raise ValueError("Payment not found")
+
+            for key, value in update_data.items():
+                setattr(payment, key, value) #อัพเดท
+
+            await self.db.commit()
+            await self.db.refresh(payment)
+            return payment
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def is_expired(self, payment_id: str) -> bool:
+        try:
+            result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+            payment = result.scalars().first()
+            if not payment:
+                raise ValueError("Payment not found")
+            
+            now = datetime.now()
+            created_at = datetime.fromisoformat(payment.created_at)
+
+            return now >= created_at + timedelta(seconds=20)
+
         except Exception as e:
             await self.db.rollback()
             raise e

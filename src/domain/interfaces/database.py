@@ -3,7 +3,8 @@ from typing import List, Optional
 from domain.model_entities.database import (
     Admin,
     Store,
-    Service
+    Service,
+    Payment
 )
 
 class AdminRepositoryInterface(ABC):
@@ -77,3 +78,26 @@ class ServiceRepositoryInterface(ABC):
     @abstractmethod
     async def delete_by_id(self, service_id: str) -> Optional[Service]:
         pass
+
+class PaymentRepositoryInterface(ABC):
+    @abstractmethod
+    async def save(self, payment: Payment) -> Payment:
+        pass
+
+    @abstractmethod 
+    async def find_by_id(self, payment_id: str) -> Payment:
+        pass
+
+    @abstractmethod
+    async def get_all(self) -> List[Payment]:
+        pass
+    
+    @abstractmethod
+    async def update_status_by_id(self, payment_id: str, update_data: dict) -> Payment: # logic ไม่อนุญาตให้แก้ทุกอย่าง ยกเว้น status
+        pass
+
+    @abstractmethod
+    async def is_expired(self, payment_id: str) -> bool:
+        pass
+
+    #หมายเหตุ: คิดว่าไม่ควร มี Delete เพราะมันต้องเก็บหลักฐานจ่ายเงิน

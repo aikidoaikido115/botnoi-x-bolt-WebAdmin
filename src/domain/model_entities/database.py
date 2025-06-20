@@ -1,4 +1,12 @@
-from sqlalchemy import Column, Float, Integer, String, ForeignKey, DateTime
+from sqlalchemy import (
+    Float,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    ForeignKey,
+    Column
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -63,4 +71,39 @@ class Service(Base):
             "prices": self.prices,
             "description":self.description,
             "store_id": self.store_id
+        }
+    
+# class Booking(Base):
+#     __tablename__ = "bookings"
+#     id = Column(String, primary_key=True, index=True)
+#     booking_time = Column(DateTime) #logic ห้าม จองวันที่ผ่านมาแล้ว
+#     status = Column(String)
+#     created_at = Column(DateTime, default=func.now())
+#     note = Column(String)
+
+#     user_id = Column(String) #ยังไม่มีตาราง user ต้องมี FK
+
+class Payment(Base):
+    __tablename__ = "payments"
+    id = Column(String, primary_key=True, index=True)
+    # title = Column(String)
+    amount = Column(Float)
+    payment_status = Column(String, default="Pending") #ยังไม่จ่าย จ่ายแล้ว หมดอายุ
+    slip = Column(String) # url รูป
+    created_at = Column(DateTime, default=func.now())
+    paid_at = Column(DateTime, nullable=True, default=None) # บันทึกเวลาที่ payment_status เปลี่ยน
+
+    booking_id = Column(String) # ยังไม่มีตาราง booking ต้องมี FK
+
+    # relationship
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "amount": self.amount,
+            "payment_status": self.payment_status,
+            "slip": self.slip,
+            "created_at":self.created_at,
+            "paid_at": self.paid_at,
+            "booking_id": self.booking_id
         }
