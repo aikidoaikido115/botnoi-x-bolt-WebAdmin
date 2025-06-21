@@ -32,7 +32,6 @@ class SupabaseAdapter(SupabaseInterface):
 
         try:
             full_path = storage_path + file_name
-            print("ของ upload", full_path)
 
             response = supabase.storage.from_(bucket_name).upload(
                 full_path,
@@ -43,6 +42,7 @@ class SupabaseAdapter(SupabaseInterface):
             return response # type เป็น dict
         except Exception as e:
             print(f"Upload failed: {e}")
+            raise ValueError(e)
 
         
 
