@@ -118,7 +118,7 @@ const DropdownMenuTrigger = ({ children, asChild, onClick }: { children: ReactNo
 const DropdownMenuContent = ({ children, className = '', align = 'start' }: DropdownProps) => {
     const alignmentClasses = align === 'end' ? 'right-0' : 'left-0';
     return (
-        <div className={`absolute top-full mt-1 ${alignmentClasses} bg-white rounded-md border shadow-lg py-1 z-50 ${className}`}>
+        <div className={`absolute top-full mt-1 ${alignmentClasses} bg-white rounded-md border-1 border-gray-100 shadow-md py-1 z-50 ${className}`}>
             {children}
         </div>
     );
@@ -137,7 +137,7 @@ const DropdownMenuItem = ({ children, className = '' }: { children: ReactNode; c
 );
 
 const DropdownMenuSeparator = () => (
-    <div className="h-px bg-gray-200 my-1" />
+    <div className="h-px bg-gray-100 my-1" />
 );
 
 const Avatar = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
@@ -156,8 +156,8 @@ export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-            <div className="flex h-16 items-center px-4">
+        <nav className="border-solid border-1 border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+            <div className="flex h-16 items-center px-4 bg-white" >
                 <div className="flex items-center space-x-4">
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
@@ -212,7 +212,7 @@ export function Navbar() {
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
                                     <p className="text-sm font-medium leading-none">Admin</p>
-                                    <p className="text-xs leading-none text-gray-500">
+                                    <p className="text-xs leading-none text-gray-400">
                                         admin@bookingHub.com
                                     </p>
                                 </div>
