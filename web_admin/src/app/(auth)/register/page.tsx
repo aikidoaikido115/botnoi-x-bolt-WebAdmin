@@ -130,14 +130,26 @@ export default function RegisterPage(): React.JSX.Element {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Here you would make your actual API call
-            const selectedStore = stores.find(store => store.id.toString() === formData.selectedStore);
-            console.log('Registration data:', {
-                ...formData,
-                storeName: selectedStore?.name
+
+            // Register 
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const response = await fetch(`${API_BASE_URL}/admins/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email:formData.email,
+                    admin_name: formData.name,
+                    admin_password: formData.password
+                })
             });
 
-            alert('Registration successful!');
+
+
+            if (response.ok){
+                alert('Registration successful!');
+            }
         } catch (error) {
             console.error('Registration failed:', error);
             alert('Registration failed. Please try again.');
