@@ -7,6 +7,7 @@ from adapter.presentation.payment_controller import payment_router
 
 from adapter.external.database.postgres import engine
 from domain.model_entities.database import Base
+from fastapi.middleware.cors import CORSMiddleware
 
 # from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
@@ -20,6 +21,14 @@ async def lifespan(app: FastAPI):
     await engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(admin_router)
 app.include_router(store_router)
