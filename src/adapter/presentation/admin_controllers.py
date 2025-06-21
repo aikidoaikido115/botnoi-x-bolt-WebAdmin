@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 # from app.infrastructure.legal_api import LegalAdapter
 
 from adapter.external.database.postgres import get_db
-from adapter.external.database.repositories import AdminRepositoryAdapter
+from adapter.external.database.repositories import AdminRepositoryAdapter, StoreRepositoryAdapter
 from adapter.external.auth import AuthAdapter
 
 from application.admin_service.register import RegisterService
@@ -38,8 +38,11 @@ async def create_admin(request: Request, db=Depends(get_db)):
         admin_password = data.get("admin_password") #hash ใน business logic
         store_id = data.get("store_id")
 
-        repo = AdminRepositoryAdapter(db)
-        service = RegisterService(repo)
+        admin_repo = AdminRepositoryAdapter(db)
+        store_repo = StoreRepositoryAdapter(db)
+
+        service = RegisterService(admin_repo, store_repo)
+        
         return await service.create_admin(email, admin_name, admin_password, store_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
