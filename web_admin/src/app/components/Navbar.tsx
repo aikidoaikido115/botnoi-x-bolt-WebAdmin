@@ -157,7 +157,7 @@ export function Navbar() {
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-            <div className="flex h-16 items-center px-4">
+            <div className="flex h-16 items-center w-full px-4">
                 <div className="flex items-center space-x-4">
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
@@ -177,6 +177,7 @@ export function Navbar() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        className="md:hidden"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         <X className="h-5 w-5" />
@@ -187,7 +188,7 @@ export function Navbar() {
                         )}
                     </Sheet>
 
-                    <Link href="/dashboard" className="flex items-center space-x-2">
+                    <Link href="/dashboard" className="flex items-center space-x-2 z-90">
                         <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
                             <span className="text-white font-bold text-sm">B</span>
                         </div>

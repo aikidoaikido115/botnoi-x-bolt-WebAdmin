@@ -77,7 +77,7 @@ export function Sidebar() {
   return (
     <div className="hidden md:flex w-64 flex-col fixed inset-y-0 z-50">
       <div className="flex flex-col flex-grow pt-16 bg-white overflow-y-auto border-r border-gray-200">
-        <div className="flex flex-col flex-grow px-4 py-4">
+        <div className="flex flex-col flex-grow px-4 py-12">
           <nav className="flex-1 space-y-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
