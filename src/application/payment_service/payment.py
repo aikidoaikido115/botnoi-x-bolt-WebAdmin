@@ -40,12 +40,9 @@ class PaymentService:
         bucket_name = supabase_env_dict["BUCKET_NAME"]
         storage_path = supabase_env_dict["STORAGE_PATH"]
         
-        # supabase_url: str,
-        # supabase_anon_key: str,
-        # bucket_name: str,
-        # storage_path: str, #ต้องมีชื่อไฟล์ concat มาก่อน
-        # file_data: bytes,
-        # file_name: str
+        file_ext = file_name.split(".")[1]
+        file_name = f"{uuid4()}.{file_ext}"
+
 
         await self.supabase_instance.upload_image(
             supabase_url,
