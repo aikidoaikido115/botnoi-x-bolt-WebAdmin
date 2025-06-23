@@ -1,9 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
-from domain.model_entities.database import Admin, Store#, Command
+from domain.model_entities.database import (
+    Admin,
+    Store,
+    Service,
+    Payment
+)
 from typing import List, Optional
-from domain.interfaces.database import AdminRepositoryInterface, StoreRepositoryInterface#, CommandRepositoryInterface
+from domain.interfaces.database import (
+    AdminRepositoryInterface,
+    StoreRepositoryInterface,
+    ServiceRepositoryInterface,
+    PaymentRepositoryInterface
+)
+
+from datetime import datetime, timedelta
 
 class AdminRepositoryAdapter(AdminRepositoryInterface):
     def __init__(self, db: AsyncSession):
@@ -88,32 +100,114 @@ class StoreRepositoryAdapter(StoreRepositoryInterface):
             await self.db.rollback()
             raise e
 
-# class CommandRepositoryAdapter(CommandRepositoryInterface):
-#     def __init__(self, db: AsyncSession):
-#         self.db = db
+class ServiceRepositoryAdapter(ServiceRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
-#     async def save(self, command: Command) -> Command:
-#         try:
-#             self.db.add(command)
-#             await self.db.commit()
-#             await self.db.refresh(command)
-#             return command
-#         except Exception as e:
-#             await self.db.rollback()
-#             raise e
+    async def save(self, service: Service) -> Service:
+        try:
+            self.db.add(service)
+            await self.db.commit()
+            await self.db.refresh(service)
+            return service
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+    
+    async def find_by_id(self, service_id: str) -> Service:
+        result = await self.db.execute(select(Service).filter(Service.id == service_id))
+        return result.scalars().first()
+    
+    async def get_all(self) -> List[Service]:
+        result = await self.db.execute(select(Service))
+        return result.scalars().all()
+    
+    async def update_by_id(self, service_id: str, update_data: dict) -> Service:
+        try:
+            result = await self.db.execute(select(Service).filter(Service.id == service_id))
+            service = result.scalars().first()
+            if not service:
+                raise ValueError("Service not found")
+
+            for key, value in update_data.items():
+                setattr(service, key, value) #อัพเดท
+
+            await self.db.commit()
+            await self.db.refresh(service)
+            return service
+        except Exception as e:
+            await self.db.rollback()
+            raise e
         
-#     async def find_by_admin_id(self, admin_id: str) -> Command:
-#         result = await self.db.execute(select(Command).filter(Command.admin_id == admin_id))
-#         return result.scalars().first()
+    async def delete_by_id(self, service_id: str) -> Optional[Service]:
+        try:
+            result = await self.db.execute(
+                select(Service).filter(Service.id == service_id)
+            )
+            service = result.scalars().first()
+
+            if not service:
+                return None  # ไม่มีให้ลบ
+
+            await self.db.delete(service)
+            await self.db.commit()
+
+            return service
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+class PaymentRepositoryAdapter(PaymentRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
     
-#     async def get_all(self) -> List[Command]:
-#         result = await self.db.execute(select(Command))
-#         return result.scalars().all()
+    async def save(self, payment: Payment) -> Payment:
+        try:
+            self.db.add(payment)
+            await self.db.commit()
+            await self.db.refresh(payment)
+            return payment
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def find_by_id(self, payment_id: str) -> Payment:
+        result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+        return result.scalars().first()
     
-#     async def delete_all_admin_command(self, admin_id: str) -> List[Command]:
-#         try:
-#             await self.db.execute(delete(Command).where(Command.admin_id == admin_id))
-#             await self.db.commit()
-#         except Exception as e:
-#             await self.db.rollback()
-#             raise e
+    async def get_all(self) -> List[Payment]:
+        result = await self.db.execute(select(Payment))
+        return result.scalars().all()
+    
+    async def update_status_by_id(self, payment_id: str, update_data: dict) -> Payment:
+        try:
+            result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+            payment = result.scalars().first()
+            if not payment:
+                raise ValueError("Payment not found")
+
+            for key, value in update_data.items():
+                setattr(payment, key, value) #อัพเดท
+
+            await self.db.commit()
+            await self.db.refresh(payment)
+            return payment
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def is_expired(self, payment_id: str) -> bool:
+        try:
+            result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
+            payment = result.scalars().first()
+            if not payment:
+                raise ValueError("Payment not found")
+            
+            now = datetime.now()
+            created_at = datetime.fromisoformat(payment.created_at)
+
+            return now >= created_at + timedelta(seconds=20)
+
+        except Exception as e:
+            await self.db.rollback()
+            raise e
