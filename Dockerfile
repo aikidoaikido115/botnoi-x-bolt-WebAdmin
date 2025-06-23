@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY ./src ./src
-COPY ./utils ./utils
+# COPY ./utils ./utils
 
 # Set working directory to src where main.py is located
 WORKDIR /app/src
