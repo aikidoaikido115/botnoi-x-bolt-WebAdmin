@@ -10,6 +10,20 @@ interface ComponentProps {
     className?: string;
 }
 
+interface Appointment {
+    id: number;
+    customerName: string;
+    serviceName: string;
+    date: string;
+    time: string;
+    duration: number;
+    price: number;
+    status: string;
+    notes?: string | null;
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+
 // Mock data - in a real app, this would come from an API or database
 const mockAppointments = [
     {
@@ -86,6 +100,8 @@ const Badge = ({ children, className = '' }: ComponentProps) => (
 
 export default function DashboardPage() {
     const [currentDate, setCurrentDate] = useState('');
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
 
     useEffect(() => {
         setCurrentDate(new Date().toLocaleDateString('th-TH', {
@@ -96,9 +112,39 @@ export default function DashboardPage() {
         }));
     }, []);
 
-    const todayAppointments = mockAppointments.filter(
-        (apt) => apt.date === '2025-01-24'
-    );
+    const fetchAppointments = async (): Promise<void> => {
+        setIsLoadingAppointments(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.ok) {
+                const appointmentsData = await response.json();
+                setAppointments(appointmentsData);
+            } else {
+                console.error('Failed to fetch appointments');
+                // Fallback to empty array if API fails
+                setAppointments([]);
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+            // Fallback to empty array if API fails
+            setAppointments([]);
+        } finally {
+            setIsLoadingAppointments(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAppointments();
+    }, []);
+
+    const todayAppointments = appointments.length > 0 
+        ? appointments.filter((apt) => apt.date === '2025-01-24')
+        : mockAppointments.filter((apt) => apt.date === '2025-01-24');
 
     const todayRevenue = todayAppointments.reduce((sum, apt) => sum + apt.price, 0);
 
@@ -116,6 +162,19 @@ export default function DashboardPage() {
                 return 'bg-gray-100 text-gray-800';
         }
     };
+
+    if (isLoadingAppointments) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-6">
+                <div className="max-w-7xl mx-auto flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
