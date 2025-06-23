@@ -11,8 +11,8 @@ export default function MainLayout({
         <div className="min-h-screen bg-gray-50">
             <Navbar />
             <Sidebar />
-            <main className="pt-16">
-                <div className="p-8 pt-10 pl-70 bg-gray-50">
+            <main className="pt-10">
+                <div className="p-8 pt-8 pl-70 bg-gray-50">
                     {children}
                 </div>
             </main>
