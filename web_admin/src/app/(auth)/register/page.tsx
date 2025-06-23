@@ -53,7 +53,7 @@ export default function RegisterPage(): React.JSX.Element {
     const fetchStores = async (): Promise<void> => {
         setIsLoadingStores(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/stores`, {
+            const response = await fetch(`${API_BASE_URL}/stores/all`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export default function RegisterPage(): React.JSX.Element {
     // Function to check if store name already exists
     const checkStoreNameExists = async (storeName: string): Promise<boolean> => {
         try {
-            const response = await fetch(`${API_BASE_URL}/stores/check-name`, {
+            const response = await fetch(`${API_BASE_URL}/store`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ export default function RegisterPage(): React.JSX.Element {
     // Function to create new store in database
     const createStoreInDatabase = async (storeName: string, storeDescription: string): Promise<Store | null> => {
         try {
-            const response = await fetch(`${API_BASE_URL}/stores`, {
+            const response = await fetch(`${API_BASE_URL}/stores/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
