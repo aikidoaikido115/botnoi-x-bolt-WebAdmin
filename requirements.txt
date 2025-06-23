@@ -4,3 +4,5 @@ sqlalchemy[asyncio]
 asyncpg
 passlib[bcrypt]
 PyJWT
+supabase
+python-multipart  
