@@ -336,7 +336,7 @@ export default function RegisterPage(): React.JSX.Element {
                     {/* Name Input */}
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name
+                            Username
                         </label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -348,7 +348,7 @@ export default function RegisterPage(): React.JSX.Element {
                                 onChange={handleInputChange}
                                 className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
                                     }`}
-                                placeholder="Enter your full name"
+                                placeholder="Enter your Username"
                             />
                         </div>
                         {errors.name && (
