@@ -10,21 +10,24 @@ from application.service_service.service import ServiceService
 service_router = APIRouter()
 
 @service_router.get("/services/all")
-async def get_services(db=Depends(get_db)):
+async def get_services(request: Request,db=Depends(get_db)):
     try:
+        query_params = dict(request.query_params)
+        store_id = query_params.get("store_id")
+
         service_repo = ServiceRepositoryAdapter(db)
         store_repo = StoreRepositoryAdapter(db)
 
         service = ServiceService(service_repo, store_repo)
-        return await service.get_services()
+        return await service.get_services(store_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @service_router.get("/service")
 async def get_service(request: Request, db=Depends(get_db)):
     try:
-        data = await request.json()
-        service_id = data.get("service_id")
+        query_params = dict(request.query_params)
+        service_id = query_params.get("service_id")
 
         service_repo = ServiceRepositoryAdapter(db)
         store_repo = StoreRepositoryAdapter(db)

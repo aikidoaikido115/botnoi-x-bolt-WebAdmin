@@ -33,8 +33,8 @@ async def get_payments(db=Depends(get_db)):
 @payment_router.get("/payment")
 async def get_payment(request: Request, db=Depends(get_db)):
     try:
-        data = await request.json()
-        payment_id = data.get("payment_id")
+        query_params = dict(request.query_params)
+        payment_id = query_params.get("payment_id")
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
@@ -57,7 +57,7 @@ async def get_payment(request: Request, db=Depends(get_db)):
 async def create_payment(
     
     amount: float = Form(...),
-    # payment_status: str = Form("Pending"), # default เป็น False
+    # payment_status: str = Form("Pending")
     slip: UploadFile = File(...),
     booking_id: str = Form(...),
 
@@ -90,4 +90,25 @@ async def create_payment(
         raise HTTPException(status_code=400, detail=str(e))
     
 
-# เหลือ 2 route
+@payment_router.put("/payments/edit")
+async def edit_status(request: Request, db=Depends(get_db)):
+    try:
+        update_data = await request.json()
+        payment_id = update_data.get("payment_id")
+
+        payment_repo = PaymentRepositoryAdapter(db)
+        supabase_instance = SupabaseAdapter()
+
+        service = PaymentService(payment_repo, supabase_instance)
+
+        payment = await service.edit_status_by_id(payment_id, update_data)
+
+        if not payment:
+            raise HTTPException(status_code=404, detail="ไม่พบข้อมูลธุรกรรม")
+
+        return payment.to_dict() if hasattr(payment, "to_dict") else payment
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")

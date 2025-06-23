@@ -17,7 +17,7 @@ class StoreService:
     async def create_store(self,store_name: str, description: str) -> Optional[Store]:
         if await self.store_repo.find_by_name(store_name):
             print("Store ซ้ำข้ามขั้นตอนนี้")
-            return None
+            raise ValueError("Store already exists.")
         
         id = str(uuid4())
         new_store = Store(id=id, store_name=store_name, description=description)

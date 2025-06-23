@@ -13,6 +13,8 @@ from typing import Optional, List
 
 from uuid import uuid4
 
+from utils.get_currecnt_date import my_date_now
+
 class PaymentService:
     def __init__(
             self,
@@ -83,11 +85,20 @@ class PaymentService:
     
     async def edit_status_by_id(self, payment_id:str, update_data:dict) -> Optional[Payment]:
 
+        print("หมดอายุยัง", await self.payment_repo.is_expired(payment_id))
+
+        if await self.payment_repo.is_expired(payment_id):
+            raise ValueError("Payment has expired and cannot be processed.")
+
         all_key = update_data.keys()
-        if "payment_status" not in all_key or len(all_key) != 1:
+        if set(all_key) != {"payment_id", "payment_status"}:
             raise ValueError("You must update only payment_status")
+        
+        # ปรับ pait_at อัตโนมัติ
+        update_data["paid_at"] = my_date_now()
 
         payment = await self.payment_repo.update_status_by_id(payment_id, update_data)
+
         return payment
     
     async def check_expiration(self, payment_id: str) -> Optional[Payment]:
