@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Calendar,
-  Scissors,
+  ShoppingBag,
   Users,
   Gift,
   Clock,
@@ -27,7 +27,7 @@ const sidebarItems = [
   {
     title: 'Services',
     href: '/services',
-    icon: Scissors,
+    icon: ShoppingBag,
   },
   {
     title: 'Customers',
@@ -49,11 +49,11 @@ const sidebarItems = [
     href: '/line-preview',
     icon: MessageSquare,
   },
-  // {
-  //   title: 'Analytics',
-  //   href: '/analytics',
-  //   icon: BarChart3,
-  // },
+  {
+    title: 'Analytics',
+    href: '/analytics',
+    icon: BarChart3,
+  },
   // {
   //   title: 'Settings',
   //   href: '/settings',

@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useRef, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
-import { Menu, User, Bell, Settings, X } from 'lucide-react';
-
+import { Menu, User, Settings as SettingsIcon, X, LogOut } from 'lucide-react';
+import { NotificationDropdown } from '@/app/components/ui/notifications-dropdown'
 // Types
 interface ButtonProps {
     children: ReactNode;
@@ -118,7 +118,7 @@ const DropdownMenuTrigger = ({ children, asChild, onClick }: { children: ReactNo
 const DropdownMenuContent = ({ children, className = '', align = 'start' }: DropdownProps) => {
     const alignmentClasses = align === 'end' ? 'right-0' : 'left-0';
     return (
-        <div className={`absolute top-full mt-1 ${alignmentClasses} bg-white rounded-md border-1 border-gray-100 shadow-md py-1 z-50 ${className}`}>
+        <div className={`absolute top-full mt-1 ${alignmentClasses} bg-white rounded-md border shadow-lg py-1 z-50 ${className}`}>
             {children}
         </div>
     );
@@ -137,7 +137,7 @@ const DropdownMenuItem = ({ children, className = '' }: { children: ReactNode; c
 );
 
 const DropdownMenuSeparator = () => (
-    <div className="h-px bg-gray-100 my-1" />
+    <div className="h-px bg-gray-200 my-1" />
 );
 
 const Avatar = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
@@ -156,8 +156,8 @@ export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <nav className="border-solid border-1 border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-            <div className="flex h-16 items-center px-4 bg-white" >
+        <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+            <div className="flex h-16 items-center px-4">
                 <div className="flex items-center space-x-4">
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
@@ -196,9 +196,7 @@ export function Navbar() {
                 </div>
 
                 <div className="ml-auto flex items-center space-x-4">
-                    <Button variant="ghost" size="icon">
-                        <Bell className="h-5 w-5" />
-                    </Button>
+                    <NotificationDropdown />
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -212,24 +210,30 @@ export function Navbar() {
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
                                     <p className="text-sm font-medium leading-none">Admin</p>
-                                    <p className="text-xs leading-none text-gray-400">
+                                    <p className="text-xs leading-none text-gray-500">
                                         admin@bookingHub.com
                                     </p>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <User className="mr-2 h-4 w-4" />
-                                <span>Profile</span>
+                                <Link href="/profile" className="flex items-center">
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>Profile</span>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
+                                <Link href="/settings" className="flex items-center">
+                                    <SettingsIcon className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                {/* TODO: Implement logout */}
-                                Log out
+                                <Link href="/register" className="flex items-center">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Log out</span>
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
