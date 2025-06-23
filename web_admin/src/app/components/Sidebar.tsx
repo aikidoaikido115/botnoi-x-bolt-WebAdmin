@@ -29,31 +29,31 @@ const sidebarItems = [
     href: '/services',
     icon: ShoppingBag,
   },
-  {
-    title: 'Customers',
-    href: '/customers',
-    icon: Users,
-  },
-  {
-    title: 'Promotions',
-    href: '/promotions',
-    icon: Gift,
-  },
-  {
-    title: 'Schedule',
-    href: '/schedule',
-    icon: Clock,
-  },
-  {
-    title: 'LINE Preview',
-    href: '/line-preview',
-    icon: MessageSquare,
-  },
-  {
-    title: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3,
-  },
+  // {
+  //   title: 'Customers',
+  //   href: '/customers',
+  //   icon: Users,
+  // },
+  // {
+  //   title: 'Promotions',
+  //   href: '/promotions',
+  //   icon: Gift,
+  // },
+  // {
+  //   title: 'Schedule',
+  //   href: '/schedule',
+  //   icon: Clock,
+  // },
+  // {
+  //   title: 'LINE Preview',
+  //   href: '/line-preview',
+  //   icon: MessageSquare,
+  // },
+  // {
+  //   title: 'Analytics',
+  //   href: '/analytics',
+  //   icon: BarChart3,
+  // },
   // {
   //   title: 'Settings',
   //   href: '/settings',
