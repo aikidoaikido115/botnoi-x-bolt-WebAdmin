@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Plus, Store, User, Mail, Lock, Check, X } from 'lucide-react';
 
 interface Store {
-    id: number;
+    id: string;
     store_name: string;
 }
 
@@ -275,6 +275,7 @@ export default function RegisterPage(): React.JSX.Element {
 
         try {
             // Register user
+            console.log(formData)
             const response = await fetch(`${API_BASE_URL}/admins/register`, {
                 method: 'POST',
                 headers: {
@@ -284,9 +285,11 @@ export default function RegisterPage(): React.JSX.Element {
                     email: formData.email,
                     admin_name: formData.name,
                     admin_password: formData.password,
-                    store_id: parseInt(formData.selectedStore)
+                    store_id: formData.selectedStore
                 })
             });
+
+            console.log(response + 'ฟฟฟฟฟ');
 
             if (response.ok) {
                 alert('Registration successful!');
