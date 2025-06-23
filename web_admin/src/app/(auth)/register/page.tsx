@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Plus, Store, User, Mail, Lock, Check, X } from 'lucide-react';
 
 interface Store {
-    id: number;
-    name: string;
+    id: string;
+    store_name: string;
 }
 
 interface FormData {
@@ -62,6 +62,7 @@ export default function RegisterPage(): React.JSX.Element {
 
             if (response.ok) {
                 const storesData = await response.json();
+                console.log(storesData);
                 setStores(storesData);
             } else {
                 console.error('Failed to fetch stores');
@@ -86,7 +87,7 @@ export default function RegisterPage(): React.JSX.Element {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: storeName.trim()
+                    store_name: storeName.trim()
                 })
             });
 
@@ -112,7 +113,7 @@ export default function RegisterPage(): React.JSX.Element {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: storeName.trim(),
+                    store_name: storeName.trim(),
                     description: storeDescription.trim()
                 })
             });
@@ -274,6 +275,7 @@ export default function RegisterPage(): React.JSX.Element {
 
         try {
             // Register user
+            console.log(formData)
             const response = await fetch(`${API_BASE_URL}/admins/register`, {
                 method: 'POST',
                 headers: {
@@ -283,9 +285,11 @@ export default function RegisterPage(): React.JSX.Element {
                     email: formData.email,
                     admin_name: formData.name,
                     admin_password: formData.password,
-                    store_id: parseInt(formData.selectedStore)
+                    store_id: formData.selectedStore
                 })
             });
+
+            console.log(response + 'ฟฟฟฟฟ');
 
             if (response.ok) {
                 alert('Registration successful!');
@@ -504,7 +508,7 @@ export default function RegisterPage(): React.JSX.Element {
                                     </option>
                                     {stores.map((store: Store) => (
                                         <option key={store.id} value={store.id}>
-                                            {store.name}
+                                            {store.store_name}
                                         </option>
                                     ))}
                                 </select>

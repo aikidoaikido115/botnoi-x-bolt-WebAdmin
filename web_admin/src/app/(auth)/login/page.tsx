@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
     admin_name: string;
@@ -14,6 +15,8 @@ interface FormErrors {
 }
 
 export default function LoginPage(): React.JSX.Element {
+    const router = useRouter();
+    
     const [formData, setFormData] = useState<FormData>({
         admin_name: '',
         admin_password: ''
@@ -58,6 +61,7 @@ export default function LoginPage(): React.JSX.Element {
 
     const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>): Promise<void> => {
         e.preventDefault();
+        
 
         if (!validateForm()) {
             return;
@@ -95,7 +99,12 @@ export default function LoginPage(): React.JSX.Element {
             console.log('Login successful:', data);
             alert('Login successful!');
 
-            
+            if (data.access_token) {
+                router.push('/dashboard');
+            } else {
+                alert('Login successful, but no access token received.');
+            }
+
 
         } catch (error) {
             console.error('Login failed:', error);
