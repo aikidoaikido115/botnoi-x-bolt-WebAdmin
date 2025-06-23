@@ -118,8 +118,8 @@ class ServiceRepositoryAdapter(ServiceRepositoryInterface):
         result = await self.db.execute(select(Service).filter(Service.id == service_id))
         return result.scalars().first()
     
-    async def get_all(self) -> List[Service]:
-        result = await self.db.execute(select(Service))
+    async def get_all(self, store_id: str) -> List[Service]:
+        result = await self.db.execute(select(Service).where(Service.store_id == store_id))
         return result.scalars().all()
     
     async def update_by_id(self, service_id: str, update_data: dict) -> Service:
@@ -204,9 +204,9 @@ class PaymentRepositoryAdapter(PaymentRepositoryInterface):
                 raise ValueError("Payment not found")
             
             now = datetime.now()
-            created_at = datetime.fromisoformat(payment.created_at)
+            # created_at = datetime.fromisoformat(payment.created_at)
 
-            return now >= created_at + timedelta(seconds=20)
+            return now >= payment.created_at + timedelta(minutes=2.00)
 
         except Exception as e:
             await self.db.rollback()

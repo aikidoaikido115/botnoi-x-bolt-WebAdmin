@@ -64,7 +64,7 @@ class ServiceRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_all(self) -> List[Service]:
+    async def get_all(self, store_id: str) -> List[Service]:
         pass
     
     @abstractmethod

@@ -52,8 +52,11 @@ class ServiceService:
         
         return await self.service_repo.save(new_service)
 
-    async def get_services(self) -> List[Service]:
-        services = await self.service_repo.get_all()
+    async def get_services(self, store_id: str) -> List[Service]:
+        if store_id is None:
+            raise ValueError("store_id must be provided")
+        
+        services = await self.service_repo.get_all(store_id)
 
         return [service.to_dict() for service in services]
     
