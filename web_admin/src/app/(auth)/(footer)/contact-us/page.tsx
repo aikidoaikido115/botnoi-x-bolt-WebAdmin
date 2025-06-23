@@ -5,16 +5,18 @@ import Link from 'next/link';
 
 export default function ContactUs() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header with Back Button */}
-      <header className="mb-8">
-        <Link
-          href="/"
-          className="inline-flex items-center text-white hover:text-purple-200 mb-4"
-        >
-          <ChevronLeft className="mr-1" size={20} />
-          Back to Home
-        </Link>
+    <div className="max-w-4xl mx-auto px-4 py-8 relative"> {/* เพิ่ม relative */}
+      {/* ปุ่ม Back ที่อยู่มุมซ้ายสุด */}
+      <Link
+        href="/"
+        className="absolute left-0 top-8 ml-4 inline-flex items-center text-white hover:text-purple-200"
+      >
+        <ChevronLeft className="mr-1" size={20} />
+        Back
+      </Link>
+
+      {/* Header */}
+      <header className="mb-8 text-center"> {/* ปรับเป็น text-center */}
         <h1 className="text-3xl font-bold text-white">Contact Us</h1>
       </header>
 
