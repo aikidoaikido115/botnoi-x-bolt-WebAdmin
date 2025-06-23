@@ -5,7 +5,7 @@ import { Eye, EyeOff, Plus, Store, User, Mail, Lock, Check, X } from 'lucide-rea
 
 interface Store {
     id: number;
-    name: string;
+    store_name: string;
 }
 
 interface FormData {
@@ -62,6 +62,7 @@ export default function RegisterPage(): React.JSX.Element {
 
             if (response.ok) {
                 const storesData = await response.json();
+                console.log(storesData);
                 setStores(storesData);
             } else {
                 console.error('Failed to fetch stores');
@@ -86,7 +87,7 @@ export default function RegisterPage(): React.JSX.Element {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: storeName.trim()
+                    store_name: storeName.trim()
                 })
             });
 
@@ -112,7 +113,7 @@ export default function RegisterPage(): React.JSX.Element {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: storeName.trim(),
+                    store_name: storeName.trim(),
                     description: storeDescription.trim()
                 })
             });
@@ -504,7 +505,7 @@ export default function RegisterPage(): React.JSX.Element {
                                     </option>
                                     {stores.map((store: Store) => (
                                         <option key={store.id} value={store.id}>
-                                            {store.name}
+                                            {store.store_name}
                                         </option>
                                     ))}
                                 </select>
