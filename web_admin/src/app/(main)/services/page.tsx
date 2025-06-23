@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { Plus, Edit, Trash2, Scissors } from 'lucide-react';
+import { Plus, Edit, Trash2, Scissors, ShoppingBag } from 'lucide-react';
 import { Service } from '../../types';
 
 export default function ServicesPage() {
@@ -229,7 +229,7 @@ export default function ServicesPage() {
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-2">
-                  <Scissors className="h-5 w-5 text-blue-600" />
+                  <ShoppingBag className="h-5 w-5 text-blue-600" />
                   <CardTitle className="text-lg font-semibold">{service.name}</CardTitle>
                 </div>
                 <div className="flex space-x-1">

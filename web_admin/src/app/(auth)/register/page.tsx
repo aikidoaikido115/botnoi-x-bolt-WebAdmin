@@ -136,6 +136,18 @@ export default function RegisterPage(): React.JSX.Element {
         fetchStores();
     }, []);
 
+     
+    useEffect(() => {
+    if (showCreateStore) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => {
+        document.body.style.overflow = '';
+    };
+}, [showCreateStore]);
+
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
 
@@ -533,13 +545,13 @@ export default function RegisterPage(): React.JSX.Element {
 
                     {/* Create Store Modal */}
                     {showCreateStore && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
                             <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-xl font-bold text-gray-800 flex items-center">
                                         <Store className="w-6 h-6 mr-2 text-green-600" />
                                         Create New Store
-                                    </h3>
+                                    </h3> 
                                     <button
                                         type="button"
                                         onClick={() => {

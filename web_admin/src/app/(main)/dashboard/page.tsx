@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, ReactNode } from 'react';
-import { Calendar, Users, Scissors, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Users, Scissors, TrendingUp, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
 
 // Types
@@ -285,7 +285,7 @@ export default function DashboardPage() {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-gray-600">Active Services</CardTitle>
-                            <Scissors className="h-4 w-4 text-gray-400" />
+                            <ShoppingBag className="h-4 w-4 text-gray-400" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-xl md:text-2xl font-bold text-gray-900">
