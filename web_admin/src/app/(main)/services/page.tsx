@@ -1,4 +1,4 @@
-// src/app/(main)/services/page.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -47,21 +47,21 @@ export default function ServicesPage() {
     isActive: true,
     promotionPrice: ''
   });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error messages
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
 
-  // Hardcoded store_id for now (should be replaced with actual value from login or app context)
+  
   const STORE_ID = '56103c94-25cf-4516-a569-10da11a54378';
 
   useEffect(() => {
-    // Load all services when the component first mounts
+    
     fetchServices();
   }, []);
 
   const fetchServices = async () => {
-    setErrorMessage(null); // Clear error message before fetching
+    setErrorMessage(null); 
     try {
       const data = await getAllServices(STORE_ID);
-      // Filter out any null/undefined entries to prevent rendering errors
+      
       const validServices = data.filter(service => service !== null && service !== undefined);
       setServices(validServices);
     } catch (error: any) {
@@ -71,7 +71,7 @@ export default function ServicesPage() {
   };
 
   const handleSubmit = async () => {
-    setErrorMessage(null); // Clear error message before submitting
+    setErrorMessage(null); 
     try {
       if (editingService) {
         const updatedService = await updateService({
@@ -83,7 +83,7 @@ export default function ServicesPage() {
         });
         setServices(services.map(service =>
           service && service.id === updatedService.id ? updatedService : service
-        ).filter(service => service !== null) as Service[]); // Filter null again and assert type
+        ).filter(service => service !== null) as Service[]); 
       } else {
         const newService = await createService({
           title: formData.title,
@@ -92,7 +92,7 @@ export default function ServicesPage() {
           prices: parseFloat(formData.prices),
           store_id: STORE_ID,
         });
-        setServices([...services, newService].filter(service => service !== null) as Service[]); // Filter null again and assert type
+        setServices([...services, newService].filter(service => service !== null) as Service[]); 
       }
       resetForm();
     } catch (error: any) {
@@ -130,10 +130,10 @@ export default function ServicesPage() {
   };
 
   const handleDelete = async (serviceId: string) => {
-    setErrorMessage(null); // Clear error message before deleting
+    setErrorMessage(null); 
     try {
       await deleteService(serviceId);
-      setServices(services.filter(service => service && service.id !== serviceId).filter(service => service !== null) as Service[]); // Filter null
+      setServices(services.filter(service => service && service.id !== serviceId).filter(service => service !== null) as Service[]); 
     } catch (error: any) {
       console.error('Error deleting service:', error);
       setErrorMessage(`Failed to delete service: ${error.message || 'Unknown error occurred'}`);
@@ -273,7 +273,7 @@ export default function ServicesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {services.map((service) => (
-            // Add a check to ensure service is not null or undefined
+            
             service && (
               <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
                 <CardHeader className="pb-3">
@@ -301,7 +301,7 @@ export default function ServicesPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {service.category && <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>}
-                    {service.isActive !== undefined && ( // Check if isActive has a value
+                    {service.isActive !== undefined && ( 
                       <Badge className={service.isActive ? "bg-black text-white" : "bg-gray-100 text-black"} >
                         {service.isActive ? 'Active' : 'Inactive'}
                       </Badge>

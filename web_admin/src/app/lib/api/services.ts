@@ -1,8 +1,7 @@
-// api/services.ts
 
-import { Service } from '../../types'; // ตรวจสอบให้แน่ใจว่า import Path ถูกต้อง
+import { Service } from '../../types'; 
 
-const BASE_URL = 'http://localhost:8000'; // Base URL ของ API ของคุณ
+const BASE_URL = 'http://localhost:8000'; 
 
 interface CreateServicePayload {
   title: string;
@@ -20,11 +19,7 @@ interface UpdateServicePayload {
   description?: string;
 }
 
-/**
- * สร้างบริการใหม่
- * @param payload ข้อมูลสำหรับสร้างบริการใหม่
- * @returns ข้อมูลบริการที่สร้างขึ้น
- */
+
 export async function createService(payload: CreateServicePayload): Promise<Service> {
   try {
     const response = await fetch(`${BASE_URL}/services/create`, {
@@ -48,11 +43,7 @@ export async function createService(payload: CreateServicePayload): Promise<Serv
   }
 }
 
-/**
- * ดึงข้อมูลบริการทั้งหมดสำหรับร้านค้าที่กำหนด
- * @param storeId ID ของร้านค้า
- * @returns รายการบริการสำหรับร้านค้านั้น
- */
+
 export async function getAllServices(storeId: string): Promise<Service[]> {
   try {
     const response = await fetch(`${BASE_URL}/services/all?store_id=${storeId}`, {
@@ -75,11 +66,7 @@ export async function getAllServices(storeId: string): Promise<Service[]> {
   }
 }
 
-/**
- * ดึงข้อมูลบริการเดียวตาม ID
- * @param serviceId ID ของบริการ
- * @returns ข้อมูลบริการ
- */
+
 export async function getServiceById(serviceId: string): Promise<Service> {
   try {
     const response = await fetch(`${BASE_URL}/service?service_id=${serviceId}`, {
@@ -102,11 +89,6 @@ export async function getServiceById(serviceId: string): Promise<Service> {
   }
 }
 
-/**
- * อัปเดตบริการที่มีอยู่
- * @param payload ข้อมูลที่จะอัปเดตสำหรับบริการ
- * @returns ข้อมูลบริการที่อัปเดตแล้ว
- */
 export async function updateService(payload: UpdateServicePayload): Promise<Service> {
   try {
     const response = await fetch(`${BASE_URL}/services/edit`, {
@@ -130,11 +112,7 @@ export async function updateService(payload: UpdateServicePayload): Promise<Serv
   }
 }
 
-/**
- * ลบบริการ
- * @param serviceId ID ของบริการที่จะลบ
- * @returns ข้อมูลบริการที่ถูกลบ
- */
+
 export async function deleteService(serviceId: string): Promise<Service> {
   try {
     const response = await fetch(`${BASE_URL}/services/delete`, {
