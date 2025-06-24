@@ -22,7 +22,23 @@ async def get_services(request: Request,db=Depends(get_db)):
         return await service.get_services(store_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+@service_router.get("/services/from-booking")
+async def get_services_from_booking(request: Request, db=Depends(get_db)):
+    try:
+        query_params = dict(request.query_params)
+        booking_id = query_params.get("booking_id")
+
+        service_repo = ServiceRepositoryAdapter(db)
+        store_repo = StoreRepositoryAdapter(db)
+
+        services = ServiceService(service_repo, store_repo)
+
+        services = await service_repo.find_services_by_booking_id(booking_id)
+        return services
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @service_router.get("/service")
 async def get_service(request: Request, db=Depends(get_db)):
     try:

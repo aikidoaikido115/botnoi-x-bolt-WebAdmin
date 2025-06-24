@@ -1,18 +1,26 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy import delete
+from sqlalchemy import and_
 from domain.model_entities.database import (
     Admin,
     Store,
     Service,
-    Payment
+    Payment,
+    User,
+    Booking,
+    BookingService
 )
 from typing import List, Optional
 from domain.interfaces.database import (
     AdminRepositoryInterface,
     StoreRepositoryInterface,
     ServiceRepositoryInterface,
-    PaymentRepositoryInterface
+    PaymentRepositoryInterface,
+    UserRepositoryInterface,
+    BookingRepositoryInterface,
+    BookingServiceRepositoryInterface
 )
 
 from datetime import datetime, timedelta
@@ -118,6 +126,17 @@ class ServiceRepositoryAdapter(ServiceRepositoryInterface):
         result = await self.db.execute(select(Service).filter(Service.id == service_id))
         return result.scalars().first()
     
+    async def find_services_by_booking_id(self, booking_id: str) -> List[Service]:
+        stmt = (
+            select(BookingService)
+            .options(selectinload(BookingService.service))
+            .where(BookingService.booking_id == booking_id)
+        )
+        result = await self.db.execute(stmt)
+        booking_services = result.scalars().all()
+
+        return [bs.service for bs in booking_services]
+    
     async def get_all(self, store_id: str) -> List[Service]:
         result = await self.db.execute(select(Service).where(Service.store_id == store_id))
         return result.scalars().all()
@@ -211,3 +230,112 @@ class PaymentRepositoryAdapter(PaymentRepositoryInterface):
         except Exception as e:
             await self.db.rollback()
             raise e
+
+class UserRepositoryAdapter(UserRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def save(self, user: User) -> User:
+        try:
+            self.db.add(user)
+            await self.db.commit()
+            await self.db.refresh(user)
+            return user
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+
+    async def find_by_id(self, user_id: str) -> User:
+        result = await self.db.execute(select(User).filter(User.id == user_id))
+        return result.scalars().first()
+    
+    async def get_all(self) -> List[User]:
+        result = await self.db.execute(select(User))
+        return result.scalars().all()
+    
+
+class BookingRepositoryAdapter(BookingRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def save(self, booking: Booking) -> Booking:
+        try:
+            self.db.add(booking)
+            await self.db.commit()
+            await self.db.refresh(booking)
+            return booking
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+    
+    async def find_by_id(self, booking_id: str) -> Booking:
+        result = await self.db.execute(select(Booking).filter(Booking.id == booking_id))
+        return result.scalars().first()
+    
+    
+    async def get_all(self, user_id: str) -> List[Booking]:
+        result = await self.db.execute(select(Booking).where(Booking.user_id == user_id))
+        return result.scalars().all()
+    
+    async def update_by_id(self, booking_id: str, update_data: dict) -> Booking:
+        try:
+            result = await self.db.execute(select(Booking).filter(Booking.id == booking_id))
+            booking = result.scalars().first()
+            if not booking:
+                raise ValueError("Booking not found")
+
+            for key, value in update_data.items():
+                setattr(booking, key, value) #อัพเดท
+
+            await self.db.commit()
+            await self.db.refresh(booking)
+            return booking
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def delete_by_id(self, booking_id: str) -> Optional[Booking]:
+        try:
+            result = await self.db.execute(
+                select(Booking).filter(Booking.id == booking_id)
+            )
+            booking = result.scalars().first()
+
+            if not booking:
+                return None  # ไม่มีให้ลบ
+
+            await self.db.delete(booking)
+            await self.db.commit()
+
+            return booking
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+
+class BookingServiceRepositoryAdapter(BookingServiceRepositoryInterface):
+    def __init__(self, db: AsyncSession):
+        self.db = db
+    
+    async def save(self, booking_service: BookingService) -> BookingService:
+        try:
+            self.db.add(booking_service)
+            await self.db.commit()
+            await self.db.refresh(booking_service)
+            return booking_service
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        
+    async def find_by_id(self, booking_id: str, service_id: str) -> BookingService:
+        result = await self.db.execute(select(BookingService).filter(
+                and_(
+                    BookingService.booking_id == booking_id,
+                    BookingService.service_id == service_id,
+                )
+            )
+        )
+        return result.scalars().first()
+    
+    async def get_all(self) -> List[BookingService]:
+        result = await self.db.execute(select(BookingService))
+        return result.scalars().all()

@@ -4,6 +4,8 @@ from adapter.presentation.admin_controllers import admin_router
 from adapter.presentation.store_controller import store_router
 from adapter.presentation.service_controller import service_router
 from adapter.presentation.payment_controller import payment_router
+from adapter.presentation.user_controller import user_router
+from adapter.presentation.booking_controller import booking_router
 
 from adapter.external.database.postgres import engine
 from domain.model_entities.database import Base
@@ -34,3 +36,5 @@ app.include_router(admin_router)
 app.include_router(store_router)
 app.include_router(service_router)
 app.include_router(payment_router)
+app.include_router(user_router)
+app.include_router(booking_router)
