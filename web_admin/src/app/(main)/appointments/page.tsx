@@ -8,6 +8,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
+import { useRouter } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -47,6 +48,7 @@ const AppointmentsPage: NextPage<AppointmentPageProps> = () => {
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const router = useRouter();
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment: Appointment) => {
@@ -176,10 +178,12 @@ const AppointmentsPage: NextPage<AppointmentPageProps> = () => {
                   <TableHead>Duration</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
+
+
                 {filteredAppointments.map((appointment: Appointment) => (
                   <TableRow key={appointment.id}>
                     <TableCell>
@@ -236,6 +240,15 @@ const AppointmentsPage: NextPage<AppointmentPageProps> = () => {
                           onClick={() => handleDeleteAppointment(appointment.id)}
                         >
                           Delete
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={()=>{
+                            router.push(`/slipverify/${appointment.id}`)
+                          }}
+                        >
+                          Slip Verify
                         </Button>
                       </div>
                     </TableCell>
