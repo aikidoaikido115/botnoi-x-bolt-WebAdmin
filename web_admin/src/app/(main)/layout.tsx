@@ -12,7 +12,7 @@ export default function MainLayout({
             <Navbar />
                 <Sidebar />
             <main className="pt-10">
-                <div className="p-8 pt-8 pl-70 bg-gray-50">
+                <div className="p-8 pt-8 md:pl-70 bg-gray-50">
                     {children}
                 </div>
             </main>

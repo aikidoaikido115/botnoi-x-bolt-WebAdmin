@@ -115,7 +115,7 @@ export default function ServicesPage() {
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingService(null)} className='bg-blue-600 text-white hover:bg-blue-800 '>
+            <Button onClick={() => setEditingService(null)} className='bg-gray-800 text-white hover:bg-black'>
               <Plus className="mr-2 h-4 w-4" />
               Add Service
             </Button>
@@ -252,7 +252,7 @@ export default function ServicesPage() {
               </div>
               <div className="flex items-center space-x-2">
                 <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>
-                <Badge className={service.isActive ? "bg-blue-600 text-white" : "bg-gray-100 text-black"} >
+                <Badge className={service.isActive ? "bg-green-600 text-white" : "bg-gray-100 text-black"} >
                   {service.isActive ? 'Active' : 'Inactive'} 
                 </Badge>
               </div>

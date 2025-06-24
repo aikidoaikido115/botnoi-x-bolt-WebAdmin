@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Bell } from 'lucide-react';
 
 interface Notification {
-  id: string; // เปลี่ยนจาก number เป็น string เพื่อให้รองรับ UUID
+  id: string;
   name: string;
   initials: string;
   type: string;
@@ -22,7 +22,6 @@ export default function NotificationsPage() {
   const loadingRef = useRef<HTMLDivElement>(null);
   const itemsPerLoad = 6;
 
-  // ฟังก์ชันสำหรับสร้าง UUID แบบง่าย
   const generateUUID = () => {
     return Math.random().toString(36).substring(2, 15) + 
            Math.random().toString(36).substring(2, 15);
@@ -36,7 +35,6 @@ export default function NotificationsPage() {
       const newNotifications = await fetchNotifications(page, itemsPerLoad, generateUUID);
       
       setNotifications(prev => {
-        // ตรวจสอบว่าไม่มีการซ้ำของ ID
         const existingIds = new Set(prev.map(n => n.id));
         const uniqueNewNotifications = newNotifications.filter(n => !existingIds.has(n.id));
         return [...prev, ...uniqueNewNotifications];
@@ -89,8 +87,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="max-w-4xl mx-auto py-6 px-4">
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Full width container with responsive padding */}
+      <main className="w-full mx-auto py-4 px-0 sm:py-6 sm:px-4 lg:px-8">
+        {/* Full width card with edge-to-edge on mobile */}
+        <div className="bg-white rounded-none shadow-sm sm:rounded-lg sm:shadow overflow-hidden w-full">
           <div className="p-4 border-b border-gray-200">
             <h1 className="text-xl font-semibold flex items-center">
               <Bell className="h-5 w-5 mr-2" />
@@ -138,16 +138,16 @@ const NotificationItem = React.memo(({
   notification: Notification;
   onMarkAsRead: (id: string) => void;
 }) => (
-  <div className={`p-4 ${!notification.isRead ? 'bg-blue-50' : 'bg-white'}`}>
+  <div className={`p-3 sm:p-4 ${!notification.isRead ? 'bg-blue-50' : 'bg-white'}`}>
     <div className="flex items-start">
-      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-green-500 flex items-center justify-center text-white">
-        <span>{notification.initials}</span>
+      <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-500 flex items-center justify-center text-white">
+        <span className="text-xs sm:text-sm">{notification.initials}</span>
       </div>
-      <div className="ml-3 flex-1">
-        <p className="text-sm font-medium text-gray-900">
+      <div className="ml-3 flex-1 min-w-0 overflow-hidden">
+        <p className="text-sm font-medium text-gray-900 truncate">
           {notification.type} from {notification.name}
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 truncate">
           {notification.service} - {notification.date}
         </p>
         <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
@@ -155,7 +155,7 @@ const NotificationItem = React.memo(({
       {!notification.isRead && (
         <button 
           onClick={() => onMarkAsRead(notification.id)}
-          className="text-xs text-blue-500 hover:text-blue-700"
+          className="text-xs text-blue-500 hover:text-blue-700 whitespace-nowrap ml-2 px-2 py-1"
         >
           Mark as read
         </button>
@@ -174,7 +174,7 @@ async function fetchNotifications(
       const mockData = Array.from({ length: limit }, (_, i) => {
         const index = (page - 1) * limit + i;
         return {
-          id: uuidGenerator(), // ใช้ UUID generator แทน
+          id: uuidGenerator(),
           name: ['Lisa', 'Michael', 'Sarah', 'Tom', 'Emma'][index % 5],
           initials: ['LH', 'MJ', 'SR', 'TP', 'EW'][index % 5],
           type: ['New booking', 'Booking confirmation', 'Reminder', 'Cancellation'][index % 4],
