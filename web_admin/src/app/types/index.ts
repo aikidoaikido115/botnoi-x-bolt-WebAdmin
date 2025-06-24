@@ -13,13 +13,14 @@ export interface Appointment {
 
 export interface Service {
   id: string;
-  name: string;
+  title: string; 
+  duration_minutes: number; 
+  prices: number; 
   description: string;
-  duration: number;
-  price: number;
-  isActive: boolean;
-  promotionPrice?: number;
-  category: string;
+  store_id: string;
+  category?: string; 
+  isActive?: boolean; 
+  promotionPrice?: number; 
 }
 
 export interface Customer {
