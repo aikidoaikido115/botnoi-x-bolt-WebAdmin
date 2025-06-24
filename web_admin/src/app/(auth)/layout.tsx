@@ -7,14 +7,15 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+    // <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-blue-600 to-blue-300">
       {/* Custom Header for Auth Pages */}
       <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-purple-600 font-bold text-xl">B</span>
+                <span className="text-blue-600 font-bold text-xl">B</span>
               </div>
               <span className="text-white font-semibold text-xl">BookingHub</span>
             </div>
@@ -32,7 +33,7 @@ export default function RegisterLayout({
             <div className="flex items-center space-x-4">
               <a
                 href="/login"
-                className="bg-white text-purple-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-100 transition"
+                className="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-100 transition"
               >
                 Login
               </a>

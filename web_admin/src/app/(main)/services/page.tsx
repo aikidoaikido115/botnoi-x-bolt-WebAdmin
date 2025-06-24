@@ -108,14 +108,14 @@ export default function ServicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Services</h1>
+          <h1 className="text-3xl mt-6 font-bold">Services</h1>
           <p className="text-muted-foreground">
             Manage your services and pricing
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingService(null)} className='bg-black text-white hover:bg-gray-600 '>
+            <Button onClick={() => setEditingService(null)} className='bg-blue-600 text-white hover:bg-blue-800 '>
               <Plus className="mr-2 h-4 w-4" />
               Add Service
             </Button>
@@ -207,7 +207,8 @@ export default function ServicesPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onCheckedChange={(checked: any) => setFormData({...formData, isActive: checked})}
-            />
+                  className="data-[state=checked]:bg-blue-600"
+                />
                 <Label htmlFor="isActive">Active Service</Label>
               </div>
             </div>
@@ -215,7 +216,7 @@ export default function ServicesPage() {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} color='white' className='bg-black text-white'>
+              <Button onClick={handleSubmit} color='white' className='bg-green-600 text-white'>
                 {editingService ? 'Update' : 'Create'} Service
               </Button>
             </DialogFooter>
@@ -251,7 +252,7 @@ export default function ServicesPage() {
               </div>
               <div className="flex items-center space-x-2">
                 <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>
-                <Badge className={service.isActive ? "bg-black text-white" : "bg-gray-100 text-black"} >
+                <Badge className={service.isActive ? "bg-blue-600 text-white" : "bg-gray-100 text-black"} >
                   {service.isActive ? 'Active' : 'Inactive'} 
                 </Badge>
               </div>

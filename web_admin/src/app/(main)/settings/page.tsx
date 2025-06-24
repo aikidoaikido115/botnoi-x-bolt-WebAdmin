@@ -24,23 +24,32 @@ import { StoreProfile } from '../../types';
 export default function SettingsPage() {
   const [storeProfile, setStoreProfile] = useState<StoreProfile>(mockStoreProfile);
   const [showSecrets, setShowSecrets] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleProfileUpdate = (field: keyof StoreProfile, value: string) => {
     setStoreProfile(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSaveProfile = () => {
-    // TODO: Save store profile via API
-    console.log('Saving profile:', storeProfile);
+    setIsSaving(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Profile saved:', storeProfile);
+      setIsSaving(false);
+    }, 1000);
   };
 
   const handleSaveLINEConfig = () => {
-    // TODO: Save LINE configuration via API
-    console.log('Saving LINE config:', {
-      channelId: storeProfile.lineChannelId,
-      channelSecret: storeProfile.lineChannelSecret,
-      webhookUrl: storeProfile.webhookUrl
-    });
+    setIsSaving(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log('LINE config saved:', {
+        channelId: storeProfile.lineChannelId,
+        channelSecret: storeProfile.lineChannelSecret,
+        webhookUrl: storeProfile.webhookUrl
+      });
+      setIsSaving(false);
+    }, 1000);
   };
 
   const copyToClipboard = (text: string) => {
@@ -124,9 +133,28 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleSaveProfile}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Profile
+                <Button 
+                  onClick={handleSaveProfile}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg 
+                            border border-blue-700 hover:border-blue-800 transition-all
+                            focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                            active:bg-blue-800 active:border-blue-900"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Profile
+                    </span>
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -175,6 +203,7 @@ export default function SettingsPage() {
                     variant="outline"
                     size="icon"
                     onClick={() => copyToClipboard(storeProfile.lineChannelId || '')}
+                    className="hover:border-gray-300"
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -195,6 +224,7 @@ export default function SettingsPage() {
                     variant="outline"
                     size="icon"
                     onClick={() => setShowSecrets(!showSecrets)}
+                    className="hover:border-gray-300"
                   >
                     {showSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
@@ -202,6 +232,7 @@ export default function SettingsPage() {
                     variant="outline"
                     size="icon"
                     onClick={() => copyToClipboard(storeProfile.lineChannelSecret || '')}
+                    className="hover:border-gray-300"
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -220,9 +251,28 @@ export default function SettingsPage() {
               </div>
 
               <div className="flex justify-end">
-                <Button onClick={handleSaveLINEConfig}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save LINE Configuration
+                <Button 
+                  onClick={handleSaveLINEConfig}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg 
+                            border border-blue-700 hover:border-blue-800 transition-all
+                            focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                            active:bg-blue-800 active:border-blue-900"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save LINE Configuration
+                    </span>
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -254,6 +304,7 @@ export default function SettingsPage() {
                     variant="outline"
                     size="icon"
                     onClick={() => copyToClipboard(storeProfile.webhookUrl || '')}
+                    className="hover:border-gray-300"
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -295,12 +346,32 @@ export default function SettingsPage() {
                   onClick={() => {
                     // TODO: Test webhook connectivity
                   }}
+                  className="hover:border-gray-300"
                 >
                   Test Webhook
                 </Button>
-                <Button onClick={handleSaveProfile}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Webhook Settings
+                <Button 
+                  onClick={handleSaveProfile}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg 
+                            border border-blue-700 hover:border-blue-800 transition-all
+                            focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                            active:bg-blue-800 active:border-blue-900"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Webhook Settings
+                    </span>
+                  )}
                 </Button>
               </div>
             </CardContent>

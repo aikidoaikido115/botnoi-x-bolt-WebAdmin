@@ -10,7 +10,7 @@ export default function MainLayout({
     return (
         <div className="min-h-screen bg-gray-50">
             <Navbar />
-            <Sidebar />
+                <Sidebar />
             <main className="pt-10">
                 <div className="p-8 pt-8 pl-70 bg-gray-50">
                     {children}

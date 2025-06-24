@@ -128,7 +128,7 @@ export default function LoginPage(): React.JSX.Element {
         <div className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100">
                 <div className="text-center mb-8">
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-300 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <User className="text-white w-8 h-8" />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Login</h1>
@@ -200,7 +200,7 @@ export default function LoginPage(): React.JSX.Element {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-300 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         {isLoading ? (
                             <div className="flex items-center justify-center">

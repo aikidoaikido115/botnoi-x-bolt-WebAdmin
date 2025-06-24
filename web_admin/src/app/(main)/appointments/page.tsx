@@ -21,14 +21,92 @@ import {
   TableHeader,
   TableRow,
 } from '../../components/ui/table';
-import { Plus, Filter, Search } from 'lucide-react';
+import { Plus, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Appointment } from '../../types';
+import { useRouter } from 'next/navigation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../../components/ui/alert-dialog';
+
+// Updated Pagination Component with item count
+const AppPagination = ({ 
+  currentPage, 
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange 
+}: {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+}) => {
+  const maxVisiblePages = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+
+  const firstItem = (currentPage - 1) * itemsPerPage + 1;
+  const lastItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+  return (
+    <div className="flex items-center justify-between mt-4">
+      <div className="text-sm text-muted-foreground">
+        Showing {firstItem}-{lastItem} of {totalItems} appointments
+      </div>
+      <div className="flex items-center space-x-1.5">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`p-1.5 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`w-8 h-8 rounded-md text-sm ${currentPage === page ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+          >
+            {page}
+          </button>
+        ))}
+
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`p-1.5 rounded-md ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function AppointmentsPage() {
+  const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(null);
+  const appointmentsPerPage = 7;
 
+  // Filter appointments
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
     const matchesSearch = 
@@ -36,6 +114,15 @@ export default function AppointmentsPage() {
       appointment.serviceName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  // Pagination logic
+  const indexOfLastAppointment = currentPage * appointmentsPerPage;
+  const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
+  const currentAppointments = filteredAppointments.slice(
+    indexOfFirstAppointment,
+    indexOfLastAppointment
+  );
+  const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -61,6 +148,24 @@ export default function AppointmentsPage() {
     // TODO: Update appointment status via API
   };
 
+  const handleDeleteClick = (appointmentId: string) => {
+    setAppointmentToDelete(appointmentId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (appointmentToDelete) {
+      setAppointments(appointments.filter(apt => apt.id !== appointmentToDelete));
+      // TODO: Delete appointment via API
+    }
+    setDeleteDialogOpen(false);
+    setAppointmentToDelete(null);
+  };
+
+  const handleEdit = (appointmentId: string) => {
+    router.push(`/appointments/verify/${appointmentId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -70,12 +175,6 @@ export default function AppointmentsPage() {
             Manage all your appointments
           </p>
         </div>
-        <Button onClick={() => {
-          // TODO: Open add appointment modal
-        }}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Appointment
-        </Button>
       </div>
 
       <Card>
@@ -103,15 +202,15 @@ export default function AppointmentsPage() {
             <div className="w-full md:w-48">
               <Label htmlFor="status">Status</Label>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectContent className="bg-white">
+                  <SelectItem value="all" className="hover:bg-gray-50">All Status</SelectItem>
+                  <SelectItem value="confirmed" className="hover:bg-gray-50">Confirmed</SelectItem>
+                  <SelectItem value="pending" className="hover:bg-gray-50">Pending</SelectItem>
+                  <SelectItem value="completed" className="hover:bg-gray-50">Completed</SelectItem>
+                  <SelectItem value="cancelled" className="hover:bg-gray-50">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -127,88 +226,117 @@ export default function AppointmentsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAppointments.map((appointment) => (
-                  <TableRow key={appointment.id}>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{appointment.customerName}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {appointment.customerLineId}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{appointment.serviceName}</TableCell>
-                    <TableCell>
-                      <div>
-                        <div>{appointment.date}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {appointment.time}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{appointment.duration} min</TableCell>
-                    <TableCell>฿{appointment.price.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Select
-                        value={appointment.status}
-                        onValueChange={(value) => handleStatusChange(appointment.id, value)}
-                      >
-                        <SelectTrigger className="w-32">
-                          <Badge className={getStatusColor(appointment.status)}>
+          {filteredAppointments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <Filter className="h-12 w-12 text-gray-400" />
+              <p className="text-gray-500 text-lg">No appointments found</p>
+              <p className="text-gray-400 text-sm">
+                {filterStatus !== 'all' ? `No ${filterStatus} appointments` : 'No appointments match your search'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Customer</TableHead>
+                      <TableHead>Service</TableHead>
+                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Duration</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentAppointments.map((appointment) => (
+                      <TableRow key={appointment.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{appointment.customerName}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {appointment.customerLineId}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{appointment.serviceName}</TableCell>
+                        <TableCell>
+                          <div>
+                            <div>{appointment.date}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {appointment.time}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{appointment.duration} min</TableCell>
+                        <TableCell>฿{appointment.price.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Badge className={`${getStatusColor(appointment.status)} w-24 justify-center`}>
                             {appointment.status}
                           </Badge>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="confirmed">Confirmed</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            // TODO: Open edit appointment modal
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            // TODO: Delete appointment
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(appointment.id)}
+                              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                            >
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteClick(appointment.id)}
+                              className="border-red-600 text-red-600 hover:bg-red-50"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Updated Pagination with item count */}
+              {filteredAppointments.length > appointmentsPerPage && (
+                <AppPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredAppointments.length}
+                  itemsPerPage={appointmentsPerPage}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              )}
+            </>
+          )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the appointment.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white hover:bg-gray-50">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
