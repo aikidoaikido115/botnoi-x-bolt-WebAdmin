@@ -120,8 +120,8 @@ export default function ServicesPage() {
     setFormData({
       title: service.title,
       description: service.description,
-      duration_minutes: service.duration_minutes.toString(),
-      prices: service.prices.toString(),
+      duration_minutes: service.duration_minutes?.toString() || '',
+      prices: service.prices?.toString() || '',
       category: service.category || '',
       isActive: service.isActive || true,
       promotionPrice: service.promotionPrice?.toString() || ''
@@ -273,7 +273,7 @@ export default function ServicesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {services.map((service) => (
-            
+            // Add a check to ensure service is not null or undefined
             service && (
               <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
                 <CardHeader className="pb-3">
@@ -301,9 +301,9 @@ export default function ServicesPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {service.category && <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>}
-                    {service.isActive !== undefined && ( 
+                    {service.isActive !== undefined && ( // Check if isActive has a value
                       <Badge className={service.isActive ? "bg-black text-white" : "bg-gray-100 text-black"} >
-                        {service.isActive ? 'Active' : 'Inactive'}
+                        {service.isActive ? 'Active' : 'Inactive'} {/* Reverted to English text */}
                       </Badge>
                     )}
                   </div>
