@@ -357,3 +357,14 @@ class BookingServiceRepositoryAdapter(BookingServiceRepositoryInterface):
     async def get_all(self) -> List[BookingService]:
         result = await self.db.execute(select(BookingService))
         return result.scalars().all()
+    
+    async def delete_by_booking_id(self, booking_id: str):
+        try:
+            await self.db.execute(
+                delete(BookingService).where(BookingService.booking_id == booking_id)
+            )
+            await self.db.commit()
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        

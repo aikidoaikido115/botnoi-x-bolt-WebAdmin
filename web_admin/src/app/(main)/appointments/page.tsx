@@ -250,11 +250,30 @@ const AppointmentsPage: NextPage = () => {
     }
   }, [appointments]);
 
-  const handleDeleteConfirm = useCallback((): void => {
+  const handleDeleteConfirm = useCallback(async (): Promise<void> => {
     if (currentAppointment) {
-      setAppointments(prev => prev.filter(a => a.id !== currentAppointment.id));
-      setDeleteDialogOpen(false);
-      setCurrentAppointment(null);
+      try {
+        const response = await fetch(`${API_BASE_URL}/bookings/delete`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ booking_id: currentAppointment.id }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Failed to delete booking');
+        }
+
+        // ลบสำเร็จ อัปเดต UI
+        setAppointments(prev => prev.filter(a => a.id !== currentAppointment.id));
+        setDeleteDialogOpen(false);
+        setCurrentAppointment(null);
+      } catch (error) {
+        console.error('Error deleting appointment:', error);
+        alert(`ไม่สามารถยกเลิกการจองได้: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
   }, [currentAppointment]);
 
