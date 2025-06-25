@@ -101,6 +101,7 @@ const Badge = ({ children, className = '' }: ComponentProps) => (
 export default function DashboardPage() {
     const [currentDate, setCurrentDate] = useState('');
     const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [customers, setCustomers] = useState<Appointment[]>([]);
     const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
 
     useEffect(() => {
@@ -136,6 +137,52 @@ export default function DashboardPage() {
         } finally {
             setIsLoadingAppointments(false);
         }
+    };
+
+    const fetchCustomer = async (): Promise<void> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/customer`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.ok) {
+                const CustomersData = await response.json();
+                setCustomers(CustomersData);
+            } else {
+                console.error('Failed to fetch appointments');
+                // Fallback to empty array if API fails
+                setCustomers([]);
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+            // Fallback to empty array if API fails
+            setCustomers([]);
+        } 
+    };
+
+    const fetchServices = async (): Promise<void> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/customer`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.ok) {
+                const CustomersData = await response.json();
+                setCustomers(CustomersData);
+            } else {
+                console.error('Failed to fetch appointments');
+                // Fallback to empty array if API fails
+                setCustomers([]);
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+            // Fallback to empty array if API fails
+            setCustomers([]);
+        } 
     };
 
     useEffect(() => {
