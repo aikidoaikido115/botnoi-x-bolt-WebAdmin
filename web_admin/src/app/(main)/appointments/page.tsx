@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { NextPage } from 'next';
-import { mockAppointments } from '@/app/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
@@ -24,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/table';
-import { Plus, Search, ChevronLeft, ChevronRight, ChevronDown, Filter, X } from 'lucide-react';
+import {  Search, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -243,10 +242,6 @@ const AppointmentsPage: NextPage = () => {
     setCurrentPage(1); // Reset to first page when filter changes
   }, []);
 
-  const handleAddAppointment = useCallback((): void => {
-    // TODO: Open add appointment modal
-    console.log('Add appointment clicked');
-  }, []);
 
   const handleEditClick = useCallback((appointmentId: string): void => {
     const appointment = appointments.find(a => a.id === appointmentId);
