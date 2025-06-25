@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect , useContext } from 'react';
 import { Eye, EyeOff, Plus, Store, User, Mail, Lock, Check, X } from 'lucide-react';
+import { BookingContext } from '@/context/BookingContext';
+import { useBooking } from '@/context/BookingContext';
 
 interface Store {
     id: string;
@@ -46,6 +48,10 @@ export default function RegisterPage(): React.JSX.Element {
     const [storeDescriptionError, setStoreDescriptionError] = useState<string>('');
 
     const [stores, setStores] = useState<Store[]>([]);
+    // const context = useContext(BookingContext)
+    const context = useBooking();
+    const {store_id , setStore_id} = context;
+    
 
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
