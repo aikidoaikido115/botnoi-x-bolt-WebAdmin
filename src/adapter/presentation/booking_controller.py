@@ -48,6 +48,30 @@ async def get_booking(request: Request, db=Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@booking_router.get("/booking-appointments")
+async def get_booking(request: Request, db=Depends(get_db)):
+    try:
+        query_params = dict(request.query_params)
+        store_id = query_params.get("store_id")
+
+        booking_repo = BookingRepositoryAdapter(db)
+        user_repo = UserRepositoryAdapter(db)
+        booking_service_repo = BookingServiceRepositoryAdapter(db)
+
+        service = BookingService(booking_repo, user_repo, booking_service_repo)
+
+        booking = await service.get_booking_by_store_id(store_id)
+
+        if not booking:
+            raise HTTPException(status_code=404, detail="ไม่พบข้อมูลการจอง")
+
+        return booking.to_dict() if hasattr(booking, "to_dict") else booking
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     
 @booking_router.post("/bookings/create")
 async def create_booking(request: Request, db=Depends(get_db)):

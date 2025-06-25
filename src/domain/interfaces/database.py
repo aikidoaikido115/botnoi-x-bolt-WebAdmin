@@ -133,6 +133,10 @@ class BookingRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def find_by_store_id(self, store_id: str) -> list: #เป็น ลิส ธรรมดาเพราะ สิ่งที่จะได้คือรวมข้อมูลหลาย table
+        pass
+
+    @abstractmethod
     async def get_all(self, user_id) -> List[Booking]:
         pass
     
