@@ -43,7 +43,7 @@ class AdminRepositoryAdapter(AdminRepositoryInterface):
         result = await self.db.execute(select(Admin).filter(Admin.admin_name == admin_name))
         return result.scalars().first()
     
-    async def find_store_id_of_admin(self, admin_name: str) -> Admin:
+    async def find_store_id_of_admin(self, admin_name: str) -> str:
         result = await self.db.execute(select(Admin.store_id).filter(Admin.admin_name == admin_name))
         return result.scalars().first()
     
