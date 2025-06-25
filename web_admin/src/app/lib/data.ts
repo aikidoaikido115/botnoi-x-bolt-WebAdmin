@@ -36,6 +36,134 @@ export const mockAppointments: Appointment[] = [
     status: 'confirmed',
     duration: 45,
     price: 250
+  },{
+    id: '4',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '5',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '6',
+    customerName: 'สมใจ ใจดี',
+    customerLineId: 'user123',
+    serviceName: 'ตัดผมชาย',
+    date: '2025-01-24',
+    time: '10:00',
+    status: 'confirmed',
+    duration: 30,
+    price: 150,
+    notes: 'ตัดสั้น ไม่ใช้เจล'
+  },
+  {
+    id: '7',
+    customerName: 'นางสาว มานี มีสุข',
+    customerLineId: 'user456',
+    serviceName: 'ทำสีผม',
+    date: '2025-01-24',
+    time: '14:00',
+    status: 'pending',
+    duration: 120,
+    price: 2500,
+    notes: 'สีน้ำตาลอ่อน'
+  },
+  {
+    id: '8',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '9',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '10',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '11',
+    customerName: 'สมใจ ใจดี',
+    customerLineId: 'user123',
+    serviceName: 'ตัดผมชาย',
+    date: '2025-01-24',
+    time: '10:00',
+    status: 'confirmed',
+    duration: 30,
+    price: 150,
+    notes: 'ตัดสั้น ไม่ใช้เจล'
+  },
+  {
+    id: '12',
+    customerName: 'นางสาว มานี มีสุข',
+    customerLineId: 'user456',
+    serviceName: 'ทำสีผม',
+    date: '2025-01-24',
+    time: '14:00',
+    status: 'pending',
+    duration: 120,
+    price: 2500,
+    notes: 'สีน้ำตาลอ่อน'
+  },
+  {
+    id: '13',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '14',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
+  },{
+    id: '15',
+    customerName: 'คุณ วิชัย ร่วมใจ',
+    customerLineId: 'user789',
+    serviceName: 'ตัดผม + สระ',
+    date: '2025-01-24',
+    time: '16:30',
+    status: 'confirmed',
+    duration: 45,
+    price: 250
   }
 ];
 
