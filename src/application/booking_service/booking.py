@@ -88,6 +88,10 @@ class BookingService:
         booking = await self.booking_repo.find_by_id(id)
         return booking
     
+    async def get_booking_by_store_id(self, store_id: str) -> list:
+        appointments = await self.booking_repo.find_by_store_id(store_id)
+        return appointments
+        
     async def edit_by_id(self, booking_id:str, update_data:dict) -> Optional[Booking]:
         booking = await self.booking_repo.update_by_id(booking_id, update_data)
         return booking
