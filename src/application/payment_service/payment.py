@@ -1,6 +1,6 @@
 from domain.interfaces.database import (
     PaymentRepositoryInterface,
-    
+    BookingRepositoryInterface
 )
 
 from domain.interfaces.supabase_image import SupabaseInterface
@@ -19,10 +19,12 @@ class PaymentService:
     def __init__(
             self,
             payment_repo: PaymentRepositoryInterface,
-            supabase_instance: SupabaseInterface
+            supabase_instance: SupabaseInterface,
+            booking_repo: BookingRepositoryInterface
         ):
         self.payment_repo = payment_repo
         self.supabase_instance = supabase_instance
+        self.booking_repo = booking_repo
 
     async def create_payment(
             self,
@@ -34,6 +36,9 @@ class PaymentService:
         ) -> Optional[Payment]:
 
         id = str(uuid4())
+
+        if await self.booking_repo.find_by_id(booking_id) is None:
+            raise ValueError("booking_id is None or incorrect")
 
         #base64 to supabase here
         supabase_env_dict = await self.supabase_instance.get_all_env()

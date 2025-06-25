@@ -10,7 +10,7 @@ from fastapi import (
 )
 
 from adapter.external.database.postgres import get_db
-from adapter.external.database.repositories import PaymentRepositoryAdapter
+from adapter.external.database.repositories import PaymentRepositoryAdapter, BookingRepositoryAdapter
 
 from adapter.external.supabase_image import SupabaseAdapter
 
@@ -24,8 +24,9 @@ async def get_payments(db=Depends(get_db)):
     try:
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
+        booking_repo = BookingRepositoryAdapter(db)
 
-        service = PaymentService(payment_repo, supabase_instance)
+        service = PaymentService(payment_repo, supabase_instance, booking_repo)
         return await service.get_payments()
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -38,8 +39,9 @@ async def get_payment(request: Request, db=Depends(get_db)):
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
+        booking_repo = BookingRepositoryAdapter(db)
 
-        service = PaymentService(payment_repo, supabase_instance)
+        service = PaymentService(payment_repo, supabase_instance, booking_repo)
 
         payment = await service.get_payment_by_id(payment_id)
 
@@ -75,8 +77,9 @@ async def create_payment(
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
+        booking_repo = BookingRepositoryAdapter(db)
 
-        service = PaymentService(payment_repo, supabase_instance)
+        service = PaymentService(payment_repo, supabase_instance, booking_repo)
 
         return await service.create_payment(
             amount,
@@ -98,8 +101,9 @@ async def edit_status(request: Request, db=Depends(get_db)):
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
+        booking_repo = BookingRepositoryAdapter(db)
 
-        service = PaymentService(payment_repo, supabase_instance)
+        service = PaymentService(payment_repo, supabase_instance, booking_repo)
 
         payment = await service.edit_status_by_id(payment_id, update_data)
 
