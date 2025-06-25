@@ -3,6 +3,7 @@ import { useState, useEffect, ReactNode } from 'react';
 import { Calendar, Users, Scissors, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
 import { useBooking } from '@/context/BookingContext';
+import { log } from 'console';
 
 // Interface สำหรับ Component Props
 interface ComponentProps {
@@ -39,7 +40,8 @@ interface Appointment {
     prices: number,
     serviceName: string,
     customerName: string,
-    notes: string
+    notes: string,
+    date:string
 
 }
 
@@ -214,6 +216,7 @@ const DashboardPage: React.FC = () => {
                 serviceName: booking.booking_services?.[0]?.service?.title || '',
                 customerName: booking.users?.user_name || '',
                 notes: booking.note || '',
+                date:booking.created_at.split('T')[0],
             });
 
             // Customers
@@ -245,6 +248,9 @@ const DashboardPage: React.FC = () => {
         setAppointments(appointmentList);
         setCustomers(Array.from(customerMap.values()));
         setServices(Array.from(serviceMap.values()));
+
+        console.log(appointments);
+        
     };
 
     const fetchBooking = async (): Promise<void> => {
@@ -284,6 +290,7 @@ const DashboardPage: React.FC = () => {
     useEffect(() => {
         if (LstBooking.length > 0) {
             formatData();
+            
         }
     }, [LstBooking]);
 
@@ -291,7 +298,7 @@ const DashboardPage: React.FC = () => {
     //     ? [] // TODO: Transform real appointments to display format
     //     : mockAppointments.filter((apt) => apt.date === '2025-01-24');
 
-    const todayAppointments = appointments.filter((apt) => apt.created_at === '2025-01-24');
+    const todayAppointments = appointments.filter((apt) => apt.date === '2025-01-24');
     const todayRevenue: number = todayAppointments.reduce((sum, apt) => sum + apt.prices, 0);
 
     const getStatusColor = (status: string): string => {
