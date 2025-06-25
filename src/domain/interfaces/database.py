@@ -73,6 +73,10 @@ class ServiceRepositoryInterface(ABC):
     @abstractmethod
     async def get_all(self, store_id: str) -> List[Service]:
         pass
+
+    @abstractmethod
+    async def find_services_id_by_title(self, title: str) -> List[str]:
+        pass
     
     @abstractmethod
     async def update_by_id(self, service_id: str, update_data: dict) -> Service:

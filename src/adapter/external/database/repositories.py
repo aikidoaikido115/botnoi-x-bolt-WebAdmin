@@ -137,6 +137,16 @@ class ServiceRepositoryAdapter(ServiceRepositoryInterface):
 
         return [bs.service for bs in booking_services]
     
+    async def find_services_id_by_title(self, title: str) -> List[str]:
+        stmt = (
+            select(Service.id)
+            .where(Service.title == title)
+        )
+        result = await self.db.execute(stmt)
+        service_ids = result.scalars().all()
+
+        return [service_id for service_id in service_ids]
+    
     async def get_all(self, store_id: str) -> List[Service]:
         result = await self.db.execute(select(Service).where(Service.store_id == store_id))
         return result.scalars().all()
