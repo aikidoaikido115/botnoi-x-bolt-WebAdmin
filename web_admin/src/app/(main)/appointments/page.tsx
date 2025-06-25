@@ -8,6 +8,8 @@ import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { useRouter } from 'next/navigation';
+import { useBooking } from '@/context/BookingContext';
+
 import {
   Select,
   SelectContent,
@@ -144,10 +146,13 @@ const AppointmentsPage: NextPage = () => {
   const [editedAppointment, setEditedAppointment] = useState<Partial<Appointment> | null>(null);
   const router = useRouter();
   const appointmentsPerPage = 7;
+  const context = useBooking();
+  const { store_id, setStore_id } = context;
 
   const fetchAppointmentsFromAPI = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=5b074886-c199-4121-8afb-6e67601ca3fa`);
+
+      const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${store_id}`);
       if (!response.ok) throw new Error('Failed to fetch');
       const data: RawBooking | RawBooking[] = await response.json();
 

@@ -3,7 +3,6 @@ import { useState, useEffect, ReactNode } from 'react';
 import { Calendar, Users, Scissors, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
 import { useBooking } from '@/context/BookingContext';
-import { log } from 'console';
 
 // Interface สำหรับ Component Props
 interface ComponentProps {
@@ -185,7 +184,7 @@ const DashboardPage: React.FC = () => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [isLoadingAppointments, setIsLoadingAppointments] = useState<boolean>(false);
-
+    
     const context = useBooking();
     const { store_id, setStore_id } = context;
 
@@ -256,7 +255,7 @@ const DashboardPage: React.FC = () => {
     const fetchBooking = async (): Promise<void> => {
         setIsLoadingAppointments(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=5b074886-c199-4121-8afb-6e67601ca3fa`, {
+            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${store_id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -299,7 +298,8 @@ const DashboardPage: React.FC = () => {
     //     ? [] // TODO: Transform real appointments to display format
     //     : mockAppointments.filter((apt) => apt.date === '2025-01-24');
 
-    const todayAppointments = appointments.filter((apt) => apt.date === '2025-06-25'); 
+    const today = new Date().toISOString().split('T')[0]; // ได้ "2025-06-25" แบบ YYYY-MM-DD
+    const todayAppointments = appointments.filter((apt) => apt.date === today);
     const todayRevenue: number = todayAppointments.reduce((sum, apt) => sum + apt.prices, 0);
 
     const getStatusColor = (status: string): string => {
