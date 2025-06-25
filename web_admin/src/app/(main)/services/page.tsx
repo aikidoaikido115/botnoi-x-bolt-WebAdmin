@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -9,6 +10,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
+
 import {
   Dialog,
   DialogContent,
@@ -18,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../../components/ui/dialog';
+
 import {
   Select,
   SelectContent,
@@ -25,8 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
+
 import { Plus, Edit, Trash2, Scissors } from 'lucide-react';
 import { Service } from '../../types';
+
 import {
   createService,
   getAllServices,
@@ -34,10 +39,15 @@ import {
   deleteService,
 } from '../../lib/api/services';
 
+import { getLatestStore } from '../../lib/api/stores';
+
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
+  const [storeId, setStoreId] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -47,31 +57,37 @@ export default function ServicesPage() {
     isActive: true,
     promotionPrice: ''
   });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
-
-  
-  const STORE_ID = '56103c94-25cf-4516-a569-10da11a54378';
 
   useEffect(() => {
-    
-    fetchServices();
+    const fetchStoreIdAndServices = async () => {
+      setErrorMessage(null);
+      try {
+        const store = await getLatestStore(); 
+        if (store) {
+          setStoreId(store.id);
+          const data = await getAllServices(store.id);
+          const validServices = data.filter(service => service !== null && service !== undefined);
+          setServices(validServices);
+        } else {
+          setErrorMessage('Store not found');
+        }
+      } catch (error: any) {
+        console.error('Error fetching services:', error);
+        setErrorMessage(`Failed to load services: ${error.message || 'Unknown error occurred'}`);
+      }
+    };
+
+    fetchStoreIdAndServices();
   }, []);
 
-  const fetchServices = async () => {
-    setErrorMessage(null); 
-    try {
-      const data = await getAllServices(STORE_ID);
-      
-      const validServices = data.filter(service => service !== null && service !== undefined);
-      setServices(validServices);
-    } catch (error: any) {
-      console.error('Error fetching services:', error);
-      setErrorMessage(`Failed to load services: ${error.message || 'Unknown error occurred'}`);
-    }
-  };
-
   const handleSubmit = async () => {
-    setErrorMessage(null); 
+    setErrorMessage(null);
+
+    if (!storeId) {
+      setErrorMessage('Store ID is not loaded');
+      return;
+    }
+
     try {
       if (editingService) {
         const updatedService = await updateService({
@@ -81,19 +97,22 @@ export default function ServicesPage() {
           duration_minutes: parseInt(formData.duration_minutes),
           prices: parseFloat(formData.prices),
         });
+
         setServices(services.map(service =>
           service && service.id === updatedService.id ? updatedService : service
-        ).filter(service => service !== null) as Service[]); 
+        ).filter(service => service !== null) as Service[]);
       } else {
         const newService = await createService({
           title: formData.title,
           description: formData.description,
           duration_minutes: parseInt(formData.duration_minutes),
           prices: parseFloat(formData.prices),
-          store_id: STORE_ID,
+          store_id: storeId,
         });
-        setServices([...services, newService].filter(service => service !== null) as Service[]); 
+
+        setServices([...services, newService].filter(service => service !== null) as Service[]);
       }
+
       resetForm();
     } catch (error: any) {
       console.error('Error submitting service:', error);
@@ -130,10 +149,10 @@ export default function ServicesPage() {
   };
 
   const handleDelete = async (serviceId: string) => {
-    setErrorMessage(null); 
+    setErrorMessage(null);
     try {
       await deleteService(serviceId);
-      setServices(services.filter(service => service && service.id !== serviceId).filter(service => service !== null) as Service[]); 
+      setServices(services.filter(service => service && service.id !== serviceId).filter(service => service !== null) as Service[]);
     } catch (error: any) {
       console.error('Error deleting service:', error);
       setErrorMessage(`Failed to delete service: ${error.message || 'Unknown error occurred'}`);
