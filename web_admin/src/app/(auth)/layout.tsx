@@ -1,8 +1,13 @@
 import React from 'react';
 
 import { BookingContextProvider } from '@/context/BookingContext';
+
 import { FaXTwitter, FaFacebookF, FaLinkedinIn } from 'react-icons/fa6';
 
+
+// import { FaXTwitter, FaFacebookF, FaLinkedinIn } from 'react-icons/fa6';
+
+// import { FaXTwitter, FaFacebookF, FaLinkedinIn } from 'react-icons/fa6';
 
 export default function RegisterLayout({
   children,
@@ -77,7 +82,7 @@ export default function RegisterLayout({
               <div className="md:ml-12 lg:ml-22">
                 <h3 className="text-white sm:text-center md:text-left lg:text-left font-semibold mb-4 ">Connect</h3>
                 <div className="flex justify-center space-x-6">
-                  <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
+                  {/* <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
                     <span className="sr-only">X (Twitter)</span>
                     <FaXTwitter size={24} />
                   </a>
@@ -88,7 +93,7 @@ export default function RegisterLayout({
                   <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
                     <span className="sr-only">LinkedIn</span>
                     <FaLinkedinIn size={24} />
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>
