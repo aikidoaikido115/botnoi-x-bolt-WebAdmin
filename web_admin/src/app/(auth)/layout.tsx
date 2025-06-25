@@ -1,13 +1,8 @@
 import React from 'react';
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import { BookingContextProvider } from '@/context/BookingContext';
-=======
 import { FaXTwitter, FaFacebookF, FaLinkedinIn } from 'react-icons/fa6';
->>>>>>> 0a854cfb9bb2d18187daa62d8c710a954ed4fad5
-=======
-import { FaXTwitter, FaFacebookF, FaLinkedinIn } from 'react-icons/fa6';
->>>>>>> 0a854cfb9bb2d18187daa62d8c710a954ed4fad5
+
 
 export default function RegisterLayout({
   children,
