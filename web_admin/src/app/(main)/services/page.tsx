@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { mockServices } from '../../lib/data';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -25,58 +24,88 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { Plus, Edit, Trash2, Scissors, ShoppingBag } from 'lucide-react';
+import { Plus, Edit, Trash2, Scissors } from 'lucide-react';
 import { Service } from '../../types';
+import {
+  createService,
+  getAllServices,
+  updateService,
+  deleteService,
+} from '../../lib/api/services';
 
 export default function ServicesPage() {
-  const [services, setServices] = useState<Service[]>(mockServices);
+  const [services, setServices] = useState<Service[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    title: '',
     description: '',
-    duration: '',
-    price: '',
+    duration_minutes: '',
+    prices: '',
     category: '',
     isActive: true,
     promotionPrice: ''
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
 
-  const handleSubmit = () => {
-    if (editingService) {
-      // TODO: Update service via API
-      setServices(services.map(service => 
-        service.id === editingService.id 
-          ? { 
-              ...service, 
-              ...formData, 
-              duration: parseInt(formData.duration),
-              price: parseFloat(formData.price),
-              promotionPrice: formData.promotionPrice ? parseFloat(formData.promotionPrice) : undefined
-            }
-          : service
-      ));
-    } else {
-      // TODO: Create new service via API
-      const newService: Service = {
-        id: Date.now().toString(),
-        ...formData,
-        duration: parseInt(formData.duration),
-        price: parseFloat(formData.price),
-        promotionPrice: formData.promotionPrice ? parseFloat(formData.promotionPrice) : undefined
-      };
-      setServices([...services, newService]);
-    }
+  
+  const STORE_ID = '56103c94-25cf-4516-a569-10da11a54378';
+
+  useEffect(() => {
     
-    resetForm();
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    setErrorMessage(null); 
+    try {
+      const data = await getAllServices(STORE_ID);
+      
+      const validServices = data.filter(service => service !== null && service !== undefined);
+      setServices(validServices);
+    } catch (error: any) {
+      console.error('Error fetching services:', error);
+      setErrorMessage(`Failed to load services: ${error.message || 'Unknown error occurred'}`);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setErrorMessage(null); 
+    try {
+      if (editingService) {
+        const updatedService = await updateService({
+          service_id: editingService.id,
+          title: formData.title,
+          description: formData.description,
+          duration_minutes: parseInt(formData.duration_minutes),
+          prices: parseFloat(formData.prices),
+        });
+        setServices(services.map(service =>
+          service && service.id === updatedService.id ? updatedService : service
+        ).filter(service => service !== null) as Service[]); 
+      } else {
+        const newService = await createService({
+          title: formData.title,
+          description: formData.description,
+          duration_minutes: parseInt(formData.duration_minutes),
+          prices: parseFloat(formData.prices),
+          store_id: STORE_ID,
+        });
+        setServices([...services, newService].filter(service => service !== null) as Service[]); 
+      }
+      resetForm();
+    } catch (error: any) {
+      console.error('Error submitting service:', error);
+      setErrorMessage(`Failed to save service: ${error.message || 'Unknown error occurred'}`);
+    }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      title: '',
       description: '',
-      duration: '',
-      price: '',
+      duration_minutes: '',
+      prices: '',
       category: '',
       isActive: true,
       promotionPrice: ''
@@ -88,34 +117,40 @@ export default function ServicesPage() {
   const handleEdit = (service: Service) => {
     setEditingService(service);
     setFormData({
-      name: service.name,
+      title: service.title,
       description: service.description,
-      duration: service.duration.toString(),
-      price: service.price.toString(),
-      category: service.category,
-      isActive: service.isActive,
+      duration_minutes: service.duration_minutes?.toString() || '',
+      prices: service.prices?.toString() || '',
+      category: service.category || '',
+      isActive: service.isActive || true,
       promotionPrice: service.promotionPrice?.toString() || ''
     });
     setIsAddDialogOpen(true);
   };
 
-  const handleDelete = (serviceId: string) => {
-    // TODO: Delete service via API
-    setServices(services.filter(service => service.id !== serviceId));
+  const handleDelete = async (serviceId: string) => {
+    setErrorMessage(null); 
+    try {
+      await deleteService(serviceId);
+      setServices(services.filter(service => service && service.id !== serviceId).filter(service => service !== null) as Service[]); 
+    } catch (error: any) {
+      console.error('Error deleting service:', error);
+      setErrorMessage(`Failed to delete service: ${error.message || 'Unknown error occurred'}`);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl mt-6 font-bold">Services</h1>
+          <h1 className="text-3xl font-bold">Services</h1>
           <p className="text-muted-foreground">
             Manage your services and pricing
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingService(null)} className='bg-gray-800 text-white hover:bg-black'>
+            <Button onClick={() => setEditingService(null)} className='bg-black text-white hover:bg-gray-600 '>
               <Plus className="mr-2 h-4 w-4" />
               Add Service
             </Button>
@@ -126,7 +161,7 @@ export default function ServicesPage() {
                 {editingService ? 'Edit Service' : 'Add New Service'}
               </DialogTitle>
               <DialogDescription>
-                {editingService 
+                {editingService
                   ? 'Update service details below.'
                   : 'Create a new service for your business.'
                 }
@@ -134,11 +169,11 @@ export default function ServicesPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4 ">
               <div className="grid gap-2" >
-                <Label htmlFor="name">Service Name</Label>
+                <Label htmlFor="title">Service Name</Label>
                 <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., Hair Cut"
                   className='border-1 border-gray-200'
                 />
@@ -148,30 +183,30 @@ export default function ServicesPage() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Brief description of the service"
                   className='border-1 border-gray-200'
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
+                  <Label htmlFor="duration_minutes">Duration (minutes)</Label>
                   <Input
-                    id="duration"
+                    id="duration_minutes"
                     type="number"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                    value={formData.duration_minutes}
+                    onChange={(e) => setFormData({ ...formData, duration_minutes: e.target.value })}
                     placeholder="30"
                     className='border-1 border-gray-200'
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="price">Price (฿)</Label>
+                  <Label htmlFor="prices">Price (฿)</Label>
                   <Input
-                    id="price"
+                    id="prices"
                     type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    value={formData.prices}
+                    onChange={(e) => setFormData({ ...formData, prices: e.target.value })}
                     placeholder="150"
                     className='border-1 border-gray-200'
                   />
@@ -179,7 +214,7 @@ export default function ServicesPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value: any) => setFormData({...formData, category: value})} >
+                <Select value={formData.category} onValueChange={(value: any) => setFormData({ ...formData, category: value })} >
                   <SelectTrigger className='border-1 border-gray-200'>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -197,7 +232,7 @@ export default function ServicesPage() {
                   id="promotionPrice"
                   type="number"
                   value={formData.promotionPrice}
-                  onChange={(e) => setFormData({...formData, promotionPrice: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, promotionPrice: e.target.value })}
                   placeholder="120"
                   className='border-1 border-gray-200'
                 />
@@ -206,8 +241,7 @@ export default function ServicesPage() {
                 <Switch
                   id="isActive"
                   checked={formData.isActive}
-                  onCheckedChange={(checked: any) => setFormData({...formData, isActive: checked})}
-                  className="data-[state=checked]:bg-blue-600"
+                  onCheckedChange={(checked: any) => setFormData({ ...formData, isActive: checked })}
                 />
                 <Label htmlFor="isActive">Active Service</Label>
               </div>
@@ -216,7 +250,7 @@ export default function ServicesPage() {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} color='white' className='bg-green-600 text-white'>
+              <Button onClick={handleSubmit} color='white' className='bg-black text-white'>
                 {editingService ? 'Update' : 'Create'} Service
               </Button>
             </DialogFooter>
@@ -224,72 +258,91 @@ export default function ServicesPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {services.map((service) => (
-          <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-2">
-                  <ShoppingBag className="h-5 w-5 text-blue-600" />
-                  <CardTitle className="text-lg font-semibold">{service.name}</CardTitle>
-                </div>
-                <div className="flex space-x-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(service)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(service.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>
-                <Badge className={service.isActive ? "bg-green-600 text-white" : "bg-gray-100 text-black"} >
-                  {service.isActive ? 'Active' : 'Inactive'} 
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500 mb-4">
-                {service.description}
-              </p>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm">Duration:</span>
-                  <span className="text-sm font-medium">{service.duration} min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Price:</span>
-                  <div className="text-right">
-                    {service.promotionPrice ? (
-                      <div>
-                        <span className="text-sm font-medium text-green-600">
-                          ฿{service.promotionPrice.toLocaleString()}
-                        </span>
-                        <span className="text-xs text-muted-foreground line-through ml-2">
-                          ฿{service.price.toLocaleString()}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-sm font-medium">
-                        ฿{service.price.toLocaleString()}
-                      </span>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline ml-2">{errorMessage}</span>
+        </div>
+      )}
+
+      {services.length === 0 && !errorMessage ? (
+        <div className="text-center text-muted-foreground py-10">
+          <p>No services found. Please add a new service.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+          {services.map((service) => (
+            // Add a check to ensure service is not null or undefined
+            service && (
+              <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Scissors className="h-5 w-5 text-blue-600" />
+                      <CardTitle className="text-lg font-semibold">{service.title}</CardTitle>
+                    </div>
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(service)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(service.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {service.category && <Badge variant="secondary" className='bg-gray-200'>{service.category}</Badge>}
+                    {service.isActive !== undefined && ( // Check if isActive has a value
+                      <Badge className={service.isActive ? "bg-black text-white" : "bg-gray-100 text-black"} >
+                        {service.isActive ? 'Active' : 'Inactive'} {/* Reverted to English text */}
+                      </Badge>
                     )}
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500 mb-4">
+                    {service.description}
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Duration:</span>
+                      <span className="text-sm font-medium">{service.duration_minutes} min</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Price:</span>
+                      <div className="text-right">
+                        {/* Add null-conditional checks for prices and promotionPrice */}
+                        {service.promotionPrice ? (
+                          <div>
+                            <span className="text-sm font-medium text-green-600">
+                              ฿{service.promotionPrice?.toLocaleString()}
+                            </span>
+                            <span className="text-xs text-muted-foreground line-through ml-2">
+                              ฿{service.prices?.toLocaleString()}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-sm font-medium">
+                            ฿{service.prices?.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          ))}
+        </div>
+      )}
     </div>
   );
 }

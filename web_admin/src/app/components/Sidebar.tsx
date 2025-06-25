@@ -29,26 +29,26 @@ const sidebarItems = [
     href: '/services',
     icon: ShoppingBag,
   },
-  // {
-  //   title: 'Customers',
-  //   href: '/customers',
-  //   icon: Users,
-  // },
-  // {
-  //   title: 'Promotions',
-  //   href: '/promotions',
-  //   icon: Gift,
-  // },
-  // {
-  //   title: 'Schedule',
-  //   href: '/schedule',
-  //   icon: Clock,
-  // },
-  // {
-  //   title: 'LINE Preview',
-  //   href: '/line-preview',
-  //   icon: MessageSquare,
-  // },
+  {
+    title: 'Customers',
+    href: '/customers',
+    icon: Users,
+  },
+  {
+    title: 'Promotions',
+    href: '/promotions',
+    icon: Gift,
+  },
+  {
+    title: 'Schedule',
+    href: '/schedule',
+    icon: Clock,
+  },
+  {
+    title: 'LINE Preview',
+    href: '/line-preview',
+    icon: MessageSquare,
+  },
   // {
   //   title: 'Analytics',
   //   href: '/analytics',
@@ -75,9 +75,9 @@ export function Sidebar() {
   };
 
   return (
-    <div className="hidden md:flex w-64 flex-col fixed inset-y-0 z-40 pt-16"> 
-      <div className="flex flex-col flex-grow bg-white overflow-y-auto border-r border-gray-200">
-        <div className="flex flex-col flex-grow px-4 py-12">
+    <div className="hidden md:flex w-64 flex-col fixed inset-y-0 z-50">
+      <div className="flex flex-col flex-grow pt-16 bg-white overflow-y-auto border-r border-gray-200">
+        <div className="flex flex-col flex-grow px-4 py-4">
           <nav className="flex-1 space-y-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
