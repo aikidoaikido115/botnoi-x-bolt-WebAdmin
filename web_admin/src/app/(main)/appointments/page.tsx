@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { NextPage } from 'next';
 import { mockAppointments } from '@/app/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
@@ -26,6 +26,8 @@ import {
 } from '@/app/components/ui/table';
 import { Plus, Search, ChevronLeft, ChevronRight, ChevronDown, Filter, X } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 // Type definitions
 interface Appointment {
   id: string;
@@ -37,6 +39,34 @@ interface Appointment {
   duration: number;
   price: number;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+}
+
+interface RawBooking {
+  id: string;
+  booking_time: string;
+  status: string;
+  users: {
+    user_name: string;
+    tel: string;
+  };
+  booking_services: {
+    service_id: string;
+    booking_id: string;
+    service: {
+      id: string;
+      title: string;
+      description: string;
+      store_id: string;
+      duration_minutes: number;
+      prices: number;
+      stores: {
+        store_name: string;
+        description: string;
+        created_at: string;
+        id: string;
+      };
+    };
+  }[];
 }
 
 type AppointmentStatus = Appointment['status'];
@@ -105,7 +135,7 @@ const AppPagination: React.FC<PaginationProps> = ({
 };
 
 const AppointmentsPage: NextPage = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,10 +146,57 @@ const AppointmentsPage: NextPage = () => {
   const router = useRouter();
   const appointmentsPerPage = 7;
 
+  const fetchAppointmentsFromAPI = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=5b074886-c199-4121-8afb-6e67601ca3fa`);
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data: RawBooking | RawBooking[] = await response.json();
+
+      const bookings: RawBooking[] = Array.isArray(data) ? data : [data];
+
+      const parsedAppointments: Appointment[] = bookings.map((item) => ({
+        id: item.id,
+        customerName: item.users?.user_name || 'N/A',
+        customerLineId: item.users?.tel || '-',
+        serviceName: item.booking_services?.[0]?.service?.title || '-',
+        date: item.booking_time.split('T')[0],
+        time: item.booking_time.split('T')[1].slice(0, 5),
+        duration: item.booking_services?.[0]?.service?.duration_minutes || 0,
+        price: item.booking_services?.[0]?.service?.prices || 0,
+        status: mapStatus(item.status),
+      }));
+
+      return parsedAppointments;
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      return [];
+    }
+  };
+
+  const mapStatus = (status: string): AppointmentStatus => {
+    switch (status) {
+      case 'not confirm': return 'pending';
+      case 'confirm': return 'confirmed';
+      case 'done': return 'completed';
+      case 'cancel': return 'cancelled';
+      default: return 'pending';
+    }
+  };
+
+  useEffect(() => {
+    const loadAppointments = async () => {
+      const results = await fetchAppointmentsFromAPI();
+      setAppointments(results);
+    };
+    loadAppointments();
+  }, []);
+
+
+
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment: Appointment) => {
       const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
-      const matchesSearch = 
+      const matchesSearch =
         appointment.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         appointment.serviceName.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesSearch;
@@ -146,9 +223,9 @@ const AppointmentsPage: NextPage = () => {
   }, []);
 
   const handleStatusChange = useCallback((appointmentId: string, newStatus: AppointmentStatus): void => {
-    setAppointments(prevAppointments => 
-      prevAppointments.map(apt => 
-        apt.id === appointmentId 
+    setAppointments(prevAppointments =>
+      prevAppointments.map(apt =>
+        apt.id === appointmentId
           ? { ...apt, status: newStatus }
           : apt
       )
@@ -175,7 +252,7 @@ const AppointmentsPage: NextPage = () => {
     const appointment = appointments.find(a => a.id === appointmentId);
     if (appointment) {
       setCurrentAppointment(appointment);
-      setEditedAppointment({...appointment});
+      setEditedAppointment({ ...appointment });
       setEditDialogOpen(true);
     }
   }, [appointments]);
@@ -198,9 +275,9 @@ const AppointmentsPage: NextPage = () => {
 
   const handleEditSave = useCallback((): void => {
     if (editedAppointment && currentAppointment) {
-      setAppointments(prev => 
-        prev.map(a => 
-          a.id === currentAppointment.id ? {...a, ...editedAppointment} : a
+      setAppointments(prev =>
+        prev.map(a =>
+          a.id === currentAppointment.id ? { ...a, ...editedAppointment } : a
         )
       );
       setEditDialogOpen(false);
@@ -210,7 +287,7 @@ const AppointmentsPage: NextPage = () => {
   }, [editedAppointment, currentAppointment]);
 
   const handleEditFieldChange = useCallback((field: keyof Appointment, value: string | number): void => {
-    setEditedAppointment(prev => ({...prev, [field]: value}));
+    setEditedAppointment(prev => ({ ...prev, [field]: value }));
   }, []);
 
   return (
@@ -221,8 +298,8 @@ const AppointmentsPage: NextPage = () => {
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Confirm Deletion</h3>
-              <button 
-                onClick={() => setDeleteDialogOpen(false)} 
+              <button
+                onClick={() => setDeleteDialogOpen(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
@@ -233,14 +310,14 @@ const AppointmentsPage: NextPage = () => {
               This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setDeleteDialogOpen(false)}
                 className="bg-white hover:bg-gray-50"
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleDeleteConfirm}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
@@ -257,68 +334,68 @@ const AppointmentsPage: NextPage = () => {
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Edit Appointment</h3>
-              <button 
-                onClick={() => setEditDialogOpen(false)} 
+              <button
+                onClick={() => setEditDialogOpen(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-2">
                 <Label>Customer</Label>
-                <Input 
-                  value={currentAppointment.customerName} 
-                  disabled 
+                <Input
+                  value={currentAppointment.customerName}
+                  disabled
                   className="bg-gray-100"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Service</Label>
-                <Input 
+                <Input
                   value={editedAppointment.serviceName || ''}
                   onChange={(e) => handleEditFieldChange('serviceName', e.target.value)}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Date</Label>
-                <Input 
+                <Input
                   type="date"
                   value={editedAppointment.date || ''}
                   onChange={(e) => handleEditFieldChange('date', e.target.value)}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Time</Label>
-                <Input 
+                <Input
                   type="time"
                   value={editedAppointment.time || ''}
                   onChange={(e) => handleEditFieldChange('time', e.target.value)}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Duration (minutes)</Label>
-                <Input 
+                <Input
                   type="number"
                   value={editedAppointment.duration || ''}
                   onChange={(e) => handleEditFieldChange('duration', parseInt(e.target.value))}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Price</Label>
-                <Input 
+                <Input
                   type="number"
                   value={editedAppointment.price || ''}
                   onChange={(e) => handleEditFieldChange('price', parseFloat(e.target.value))}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Status</Label>
                 <Select
@@ -337,16 +414,16 @@ const AppointmentsPage: NextPage = () => {
                 </Select>
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setEditDialogOpen(false)}
                 className="bg-white hover:bg-gray-50"
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleEditSave}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
@@ -467,7 +544,7 @@ const AppointmentsPage: NextPage = () => {
                             </Badge>
                             <Select
                               value={appointment.status}
-                              onValueChange={(value: AppointmentStatus) => 
+                              onValueChange={(value: AppointmentStatus) =>
                                 handleStatusChange(appointment.id, value)
                               }
                             >
