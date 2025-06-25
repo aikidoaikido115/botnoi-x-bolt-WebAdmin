@@ -19,6 +19,10 @@ class AdminRepositoryInterface(ABC):
     async def find_by_name(self, admin_name: str) -> Admin:
         pass
 
+    @abstractmethod 
+    async def find_store_id_of_admin(self, admin_name: str) -> str:
+        pass
+
     @abstractmethod
     async def get_all(self) -> List[Admin]:
         pass
@@ -75,7 +79,7 @@ class ServiceRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def find_services_id_by_title(self, title: str) -> List[str]:
+    async def find_services_id_by_title(self, title: str) -> dict:
         pass
     
     @abstractmethod
