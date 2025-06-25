@@ -272,6 +272,24 @@ class BookingRepositoryAdapter(BookingRepositoryInterface):
         result = await self.db.execute(select(Booking).filter(Booking.id == booking_id))
         return result.scalars().first()
     
+    async def find_by_store_id(self, store_id: str) -> list:
+        result = await self.db.execute(
+            select(Booking)
+            # เริ่มต้นด้วยการ Join ไปยัง Service ผ่าน BookingService เพื่อให้กรองด้วย store_id ได้
+            .join(BookingService, Booking.id == BookingService.booking_id)
+            .join(Service, BookingService.service_id == Service.id)
+            .filter(Service.store_id == store_id)
+
+            # โหลดความสัมพันธ์ของ Booking
+            .options(
+                selectinload(Booking.users), # โหลดข้อมูล User ที่เกี่ยวข้องกับ Booking
+                # selectinload(Booking.payments), # โหลดข้อมูล Payment ที่เกี่ยวข้องกับ Booking
+                selectinload(Booking.booking_services).selectinload(BookingService.service).selectinload(Service.stores)
+                # ^ โหลด BookingService -> Service -> Store
+                #   ถ้า Service มีความสัมพันธ์กับ Store อยู่แล้ว (ซึ่งมี)
+            )
+        )
+        return result.scalars().unique().all()
     
     async def get_all(self, user_id: str) -> List[Booking]:
         result = await self.db.execute(select(Booking).where(Booking.user_id == user_id))
