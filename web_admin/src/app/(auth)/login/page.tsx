@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useBooking } from '@/context/BookingContext';
 
 interface FormData {
     admin_name: string;
@@ -16,9 +15,6 @@ interface FormErrors {
 }
 
 export default function LoginPage(): React.JSX.Element {
-
-    const context = useBooking();
-    const {store_id , setStore_id} = context;
     const router = useRouter();
     
     const [formData, setFormData] = useState<FormData>({
@@ -29,7 +25,7 @@ export default function LoginPage(): React.JSX.Element {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errors, setErrors] = useState<FormErrors>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    
+
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
 
@@ -96,8 +92,6 @@ export default function LoginPage(): React.JSX.Element {
 
 
             if (data.access_token) {
-                
-                setStore_id(data.store_id);
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('token_type', data.token_type || 'bearer');
             }
