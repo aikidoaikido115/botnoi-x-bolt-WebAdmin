@@ -64,9 +64,19 @@ class ServiceService:
         service = await self.service_repo.find_by_id(id)
         return service
     
+    async def get_service_by_booking_id(self, booking_id: str) -> List[Service]:
+        if booking_id is None:
+            raise ValueError("booking_id must be provided")
+        
+        services = await self.service_repo.find_services_by_booking_id(booking_id)
+
+        return [service.to_dict() for service in services]
+    
+
     async def edit_by_id(self, service_id:str, update_data:dict) -> Optional[Service]:
         service = await self.service_repo.update_by_id(service_id, update_data)
         return service
+    
     async def remove_by_id(self, service_id: str) -> Optional[Service]:
         service = await self.service_repo.delete_by_id(service_id)
         return service

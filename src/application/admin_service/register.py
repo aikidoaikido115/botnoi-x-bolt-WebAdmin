@@ -41,6 +41,6 @@ class RegisterService:
 
         return [admin.to_dict() for admin in admins]
     
-    async def get_admin_by_id(self, id: str) -> Optional[Admin]:
-        admin = await self.admin_repo.get_by_id(id)
-        return admin
+    # async def get_admin_by_id(self, id: str) -> Optional[Admin]:
+    #     admin = await self.admin_repo.get_by_id(id)
+    #     return admin
