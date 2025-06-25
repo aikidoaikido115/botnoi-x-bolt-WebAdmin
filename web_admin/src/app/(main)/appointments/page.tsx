@@ -242,16 +242,6 @@ const AppointmentsPage: NextPage = () => {
     setCurrentPage(1); // Reset to first page when filter changes
   }, []);
 
-
-  const handleEditClick = useCallback((appointmentId: string): void => {
-    const appointment = appointments.find(a => a.id === appointmentId);
-    if (appointment) {
-      setCurrentAppointment(appointment);
-      setEditedAppointment({ ...appointment });
-      setEditDialogOpen(true);
-    }
-  }, [appointments]);
-
   const handleDeleteClick = useCallback((appointmentId: string): void => {
     const appointment = appointments.find(a => a.id === appointmentId);
     if (appointment) {
@@ -267,23 +257,6 @@ const AppointmentsPage: NextPage = () => {
       setCurrentAppointment(null);
     }
   }, [currentAppointment]);
-
-  const handleEditSave = useCallback((): void => {
-    if (editedAppointment && currentAppointment) {
-      setAppointments(prev =>
-        prev.map(a =>
-          a.id === currentAppointment.id ? { ...a, ...editedAppointment } : a
-        )
-      );
-      setEditDialogOpen(false);
-      setCurrentAppointment(null);
-      setEditedAppointment(null);
-    }
-  }, [editedAppointment, currentAppointment]);
-
-  const handleEditFieldChange = useCallback((field: keyof Appointment, value: string | number): void => {
-    setEditedAppointment(prev => ({ ...prev, [field]: value }));
-  }, []);
 
   return (
     <div className="space-y-6 relative">
@@ -301,7 +274,7 @@ const AppointmentsPage: NextPage = () => {
               </button>
             </div>
             <p className="mb-6">
-              Are you sure you want to delete the appointment for {currentAppointment?.customerName}?
+              Are you sure you want to Cancel the appointment for {currentAppointment?.customerName}?
               This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
@@ -316,113 +289,7 @@ const AppointmentsPage: NextPage = () => {
                 onClick={handleDeleteConfirm}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
-                Delete
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Appointment Overlay */}
-      {editDialogOpen && currentAppointment && editedAppointment && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Edit Appointment</h3>
-              <button
-                onClick={() => setEditDialogOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="space-y-2">
-                <Label>Customer</Label>
-                <Input
-                  value={currentAppointment.customerName}
-                  disabled
-                  className="bg-gray-100"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Service</Label>
-                <Input
-                  value={editedAppointment.serviceName || ''}
-                  onChange={(e) => handleEditFieldChange('serviceName', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Date</Label>
-                <Input
-                  type="date"
-                  value={editedAppointment.date || ''}
-                  onChange={(e) => handleEditFieldChange('date', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Time</Label>
-                <Input
-                  type="time"
-                  value={editedAppointment.time || ''}
-                  onChange={(e) => handleEditFieldChange('time', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Duration (minutes)</Label>
-                <Input
-                  type="number"
-                  value={editedAppointment.duration || ''}
-                  onChange={(e) => handleEditFieldChange('duration', parseInt(e.target.value))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Price</Label>
-                <Input
-                  type="number"
-                  value={editedAppointment.price || ''}
-                  onChange={(e) => handleEditFieldChange('price', parseFloat(e.target.value))}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Select
-                  value={editedAppointment.status}
-                  onValueChange={(value) => handleEditFieldChange('status', value as AppointmentStatus)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem className="hover:bg-gray-50" value="pending">Pending</SelectItem>
-                    <SelectItem className="hover:bg-gray-50" value="confirmed">Confirmed</SelectItem>
-                    <SelectItem className="hover:bg-gray-50" value="completed">Completed</SelectItem>
-                    <SelectItem className="hover:bg-gray-50" value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-                className="bg-white hover:bg-gray-50"
-              >
                 Cancel
-              </Button>
-              <Button
-                onClick={handleEditSave}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Save Changes
               </Button>
             </div>
           </div>
@@ -555,21 +422,14 @@ const AppointmentsPage: NextPage = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                              onClick={() => handleEditClick(appointment.id)}
-                            >
-                              Edit
-                            </Button>
+                            
                             <Button
                               variant="outline"
                               size="sm"
                               className="border-red-600 text-red-600 hover:bg-red-50"
                               onClick={() => handleDeleteClick(appointment.id)}
                             >
-                              Delete
+                              Cancel
                             </Button>
                             <Button
                               variant="outline"

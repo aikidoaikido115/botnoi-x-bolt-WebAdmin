@@ -102,7 +102,7 @@ interface BookingResponse {
 // Status type union
 type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed';
 
-const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Mock data with proper typing
 const mockAppointments: MockAppointment[] = [
@@ -256,17 +256,19 @@ const DashboardPage: React.FC = () => {
     const fetchBooking = async (): Promise<void> => {
         setIsLoadingAppointments(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${store_id}`, {
+            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=5b074886-c199-4121-8afb-6e67601ca3fa`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
 
+            console.log('Fetching appointments for store_id:', store_id);
+
             if (response.ok) {
                 const LstData: BookingResponse[] = await response.json();
-                setLstBooking(LstData);
-                await formatData();
+                setLstBooking(LstData); // ✅ ให้ useEffect ที่ watch LstBooking ทำหน้าที่นี้
+                console.log('Fetched appointments:', LstData);
             } else {
                 console.error('Failed to fetch appointments');
                 setLstBooking([]);
@@ -282,15 +284,14 @@ const DashboardPage: React.FC = () => {
 
 
     useEffect(() => {
-        if (store_id) {
+        // if (store_id) {
             fetchBooking();
-        }
-    }, [store_id]);
+        // }
+    }, []);
 
     useEffect(() => {
         if (LstBooking.length > 0) {
             formatData();
-            
         }
     }, [LstBooking]);
 
@@ -298,7 +299,7 @@ const DashboardPage: React.FC = () => {
     //     ? [] // TODO: Transform real appointments to display format
     //     : mockAppointments.filter((apt) => apt.date === '2025-01-24');
 
-    const todayAppointments = appointments.filter((apt) => apt.date === '2025-01-24');
+    const todayAppointments = appointments.filter((apt) => apt.date === '2025-06-25'); 
     const todayRevenue: number = todayAppointments.reduce((sum, apt) => sum + apt.prices, 0);
 
     const getStatusColor = (status: string): string => {
