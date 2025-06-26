@@ -1,3 +1,5 @@
+import { useBooking } from '@/context/BookingContext';
+
 const BASE_URL = 'http://localhost:8000';
 
 export interface Store {
@@ -7,8 +9,11 @@ export interface Store {
 }
 
 export async function getLatestStore(): Promise<Store | null> {
+  const context = useBooking();
+  const { store_id, setStore_id } = context;
+
   try {
-    const response = await fetch(`${BASE_URL}/stores/all`, {
+    const response = await fetch(`${BASE_URL}/store?store_id=${store_id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
