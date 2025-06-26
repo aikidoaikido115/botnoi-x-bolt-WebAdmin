@@ -20,9 +20,9 @@ from utils.get_currecnt_date import my_date_now
 class BookingService:
     def __init__(
             self,
-            booking_repo: BookingRepositoryInterface,
-            user_rero: UserRepositoryInterface,
-            booking_service_repo: BookingServiceRepositoryInterface
+            booking_repo,
+            user_rero,
+            booking_service_repo
         ):
         self.booking_repo = booking_repo
         self.user_repo = user_rero
@@ -88,10 +88,20 @@ class BookingService:
         booking = await self.booking_repo.find_by_id(id)
         return booking
     
+    async def get_booking_by_store_id(self, store_id: str) -> list:
+        appointments = await self.booking_repo.find_by_store_id(store_id)
+        return appointments
+        
     async def edit_by_id(self, booking_id:str, update_data:dict) -> Optional[Booking]:
         booking = await self.booking_repo.update_by_id(booking_id, update_data)
         return booking
     
-    async def remove_by_id(self, booking_id: str) -> Optional[Booking]:
-        booking = await self.booking_repo.delete_by_id(booking_id)
-        return booking
+    async def remove_by_id(self, booking_id: str):
+        try:
+            # ลบ BookingService ก่อน
+            await self.booking_service_repo.delete_by_booking_id(booking_id)
+
+            # ลบ Booking หลัก
+            return await self.booking_repo.delete_by_id(booking_id)
+        except Exception as e:
+            raise e

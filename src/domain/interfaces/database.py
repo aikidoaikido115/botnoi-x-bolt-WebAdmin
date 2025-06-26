@@ -19,6 +19,10 @@ class AdminRepositoryInterface(ABC):
     async def find_by_name(self, admin_name: str) -> Admin:
         pass
 
+    @abstractmethod 
+    async def find_store_id_of_admin(self, admin_name: str) -> str:
+        pass
+
     @abstractmethod
     async def get_all(self) -> List[Admin]:
         pass
@@ -72,6 +76,10 @@ class ServiceRepositoryInterface(ABC):
 
     @abstractmethod
     async def get_all(self, store_id: str) -> List[Service]:
+        pass
+
+    @abstractmethod
+    async def find_services_id_by_title(self, title: str) -> dict:
         pass
     
     @abstractmethod
@@ -130,6 +138,10 @@ class BookingRepositoryInterface(ABC):
 
     @abstractmethod 
     async def find_by_id(self, booking_id: str) -> Booking:
+        pass
+
+    @abstractmethod
+    async def find_by_store_id(self, store_id: str) -> list: #เป็น ลิส ธรรมดาเพราะ สิ่งที่จะได้คือรวมข้อมูลหลาย table
         pass
 
     @abstractmethod

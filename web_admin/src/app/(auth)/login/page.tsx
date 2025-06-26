@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useBooking } from '@/context/BookingContext';
 
 interface FormData {
     admin_name: string;
@@ -15,6 +16,9 @@ interface FormErrors {
 }
 
 export default function LoginPage(): React.JSX.Element {
+
+    const context = useBooking();
+    const {store_id , setStore_id} = context;
     const router = useRouter();
     
     const [formData, setFormData] = useState<FormData>({
@@ -25,7 +29,7 @@ export default function LoginPage(): React.JSX.Element {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errors, setErrors] = useState<FormErrors>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
 
@@ -92,6 +96,8 @@ export default function LoginPage(): React.JSX.Element {
 
 
             if (data.access_token) {
+                
+                setStore_id(data.store_id);
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('token_type', data.token_type || 'bearer');
             }
@@ -125,10 +131,10 @@ export default function LoginPage(): React.JSX.Element {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100">
+        <div className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100">
                 <div className="text-center mb-8">
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-300 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <User className="text-white w-8 h-8" />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Login</h1>
@@ -200,7 +206,7 @@ export default function LoginPage(): React.JSX.Element {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-300 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         {isLoading ? (
                             <div className="flex items-center justify-center">
