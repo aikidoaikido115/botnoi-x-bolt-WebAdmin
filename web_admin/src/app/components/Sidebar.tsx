@@ -54,8 +54,8 @@ export function Sidebar() {
   };
 
   return (
-    <div className="hidden md:flex w-64 flex-col fixed inset-y-50 z-50  ">
-      <div className="flex flex-col flex-grow pt-16 bg-white overflow-y-auto border-r border-gray-300 rounded-tr-4xl rounded-br-4xl shadow-md">
+    <div className=" w-64 flex-col fixed inset-y-50 z-50  ">
+      <div className="flex flex-col flex-grow pt-10 pb-10 bg-white overflow-y-auto border-r border-gray-300 rounded-tr-4xl rounded-br-4xl shadow-md">
         <div className="flex flex-col flex-grow px-4 py-4">
           <nav className="flex-1 space-y-2">
             {sidebarItems.map((item) => {
