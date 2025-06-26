@@ -150,9 +150,6 @@ export function Navbar() {
 
                     <div className="ml-auto flex items-center space-x-4">
                         <NotificationDropdown 
-                            isOpen={isNotificationOpen}
-                            onOpenChange={setIsNotificationOpen}
-                            fullScreen={true}
                         />
                         
                         {/* Profile dropdown - visible only on medium and larger screens */}
