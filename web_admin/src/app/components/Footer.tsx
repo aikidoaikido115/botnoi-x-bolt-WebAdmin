@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="text-center pt-6 pb-6 bg-white border-1 border-gray-200 ">
+    <footer className="text-center pt-6 pb-6 bg-white border-1 border-gray-200 mt-43.5">
       <p>Built with Bolt.new</p>
     </footer>
   );

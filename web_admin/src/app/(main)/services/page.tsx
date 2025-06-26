@@ -232,7 +232,7 @@ export default function ServicesPage() {
                   />
                 </div>
               </div>
-              <div className="grid gap-2">
+              {/* <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
                 <Select value={formData.category} onValueChange={(value: any) => setFormData({ ...formData, category: value })} >
                   <SelectTrigger className='border-1 border-gray-200'>
@@ -245,7 +245,7 @@ export default function ServicesPage() {
                     <SelectItem value="ทรีทเมนต์" className='hover:bg-gray-100'>ทรีทเมนต์</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
               <div className="grid gap-2">
                 <Label htmlFor="promotionPrice">Promotion Price (฿) - Optional</Label>
                 <Input
@@ -258,12 +258,12 @@ export default function ServicesPage() {
                 />
               </div>
               <div className="flex items-center space-x-2 bg-white">
-                <Switch
+                {/* <Switch
                   id="isActive"
                   checked={formData.isActive}
                   onCheckedChange={(checked: any) => setFormData({ ...formData, isActive: checked })}
                 />
-                <Label htmlFor="isActive">Active Service</Label>
+                <Label htmlFor="isActive">Active Service</Label> */}
               </div>
             </div>
             <DialogFooter>
