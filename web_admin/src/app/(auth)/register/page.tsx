@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect , useContext } from 'react';
 import { Eye, EyeOff, Plus, Store, User, Mail, Lock, Check, X } from 'lucide-react';
+import { BookingContext } from '@/context/BookingContext';
+import { useBooking } from '@/context/BookingContext';
 
 interface Store {
     id: string;
@@ -46,6 +48,10 @@ export default function RegisterPage(): React.JSX.Element {
     const [storeDescriptionError, setStoreDescriptionError] = useState<string>('');
 
     const [stores, setStores] = useState<Store[]>([]);
+    // const context = useContext(BookingContext)
+    const context = useBooking();
+    const {store_id , setStore_id} = context;
+    
 
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -135,6 +141,18 @@ export default function RegisterPage(): React.JSX.Element {
     useEffect(() => {
         fetchStores();
     }, []);
+
+     
+    useEffect(() => {
+    if (showCreateStore) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => {
+        document.body.style.overflow = '';
+    };
+}, [showCreateStore]);
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
@@ -326,10 +344,10 @@ export default function RegisterPage(): React.JSX.Element {
     const passwordStrength = getPasswordStrength(formData.password);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100">
                 <div className="text-center mb-8">
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-300 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <User className="text-white w-8 h-8" />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
@@ -340,7 +358,7 @@ export default function RegisterPage(): React.JSX.Element {
                     {/* Name Input */}
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name
+                            Username
                         </label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -352,7 +370,7 @@ export default function RegisterPage(): React.JSX.Element {
                                 onChange={handleInputChange}
                                 className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
                                     }`}
-                                placeholder="Enter your full name"
+                                placeholder="Enter your Username"
                             />
                         </div>
                         {errors.name && (
@@ -533,13 +551,13 @@ export default function RegisterPage(): React.JSX.Element {
 
                     {/* Create Store Modal */}
                     {showCreateStore && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
                             <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-xl font-bold text-gray-800 flex items-center">
                                         <Store className="w-6 h-6 mr-2 text-green-600" />
                                         Create New Store
-                                    </h3>
+                                    </h3> 
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -663,7 +681,7 @@ export default function RegisterPage(): React.JSX.Element {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-300 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         {isLoading ? (
                             <div className="flex items-center justify-center">

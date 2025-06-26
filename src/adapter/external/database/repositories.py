@@ -42,7 +42,11 @@ class AdminRepositoryAdapter(AdminRepositoryInterface):
     async def find_by_name(self, admin_name: str) -> Admin:
         result = await self.db.execute(select(Admin).filter(Admin.admin_name == admin_name))
         return result.scalars().first()
-
+    
+    async def find_store_id_of_admin(self, admin_name: str) -> str:
+        result = await self.db.execute(select(Admin.store_id).filter(Admin.admin_name == admin_name))
+        return result.scalars().first()
+    
     async def get_all(self) -> List[Admin]:
         result = await self.db.execute(select(Admin))
         return result.scalars().all()
@@ -136,6 +140,24 @@ class ServiceRepositoryAdapter(ServiceRepositoryInterface):
         booking_services = result.scalars().all()
 
         return [bs.service for bs in booking_services]
+    
+    async def find_services_id_by_title(self, title: str) -> dict:
+        stmt = (
+            select(Service.id)
+            .where(Service.title == title)
+        )
+        result = await self.db.execute(stmt)
+        # service_ids = result.scalars().all()
+
+        # return {
+        #     "service_id":[service_id for service_id in service_ids]
+        # }
+
+        service_id = result.scalars().first()
+
+        return {
+            "service_id":service_id
+        }
     
     async def get_all(self, store_id: str) -> List[Service]:
         result = await self.db.execute(select(Service).where(Service.store_id == store_id))
@@ -357,3 +379,14 @@ class BookingServiceRepositoryAdapter(BookingServiceRepositoryInterface):
     async def get_all(self) -> List[BookingService]:
         result = await self.db.execute(select(BookingService))
         return result.scalars().all()
+    
+    async def delete_by_booking_id(self, booking_id: str):
+        try:
+            await self.db.execute(
+                delete(BookingService).where(BookingService.booking_id == booking_id)
+            )
+            await self.db.commit()
+        except Exception as e:
+            await self.db.rollback()
+            raise e
+        

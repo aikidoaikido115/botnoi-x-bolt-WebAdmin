@@ -20,12 +20,12 @@ class LoginService:
     async def login(self, admin_name: str, admin_password: str) -> Optional[str]:
         admin = await self.admin_repo.find_by_name(admin_name)
         if not admin:
-            print(" ไม่พบชื่อ Admin")
-            return None
+            print("ไม่พบชื่อ Admin")
+            raise ValueError("Admin not found")
         
         if not self.pwd_context.verify(admin_password, admin.admin_password):###
             print("รหัสผ่านไม่ถูกต้อง")
-            return None
+            raise ValueError("Incorrect Admin_name or Password")
         
         # สร้าง payload สำหรับ JWT
         payload = {
@@ -35,8 +35,9 @@ class LoginService:
             "iat": datetime.now(timezone.utc), #  เวลาที่สร้าง
         }
 
+        store_id = await self.admin_repo.find_store_id_of_admin(admin_name)
         # encode เป็น JWT token
         jwt_secret_str = str(self.jwt_secret.get_jwt_secret())
         token = jwt.encode(payload, jwt_secret_str, algorithm=self.jwt_algorithm)
-        return token # login สำเร็จส่ง token 
+        return token, store_id # login สำเร็จส่ง token 
 

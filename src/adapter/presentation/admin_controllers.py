@@ -61,8 +61,13 @@ async def admin_login(request: Request, db=Depends(get_db)):
     auth_adapter_instance = AuthAdapter()
     auth_service = LoginService(repo, jwt_secret=auth_adapter_instance)
 
-    token = await auth_service.login(admin_name, admin_password)
+    token, store_id = await auth_service.login(admin_name, admin_password)
+    print("token",token,"store_id",store_id)
     if not token:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "store_id": store_id
+    }

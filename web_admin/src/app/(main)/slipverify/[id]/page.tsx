@@ -1,14 +1,18 @@
-'use client'; // Although not strictly needed for Pages Router hooks, it doesn't hurt.
+'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/router'; // Import useRouter for Pages Router
+import { useState, useEffect, ReactNode, use } from 'react';
+import { useRouter } from 'next/navigation';
 import { Calendar, Users, Scissors, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card'; // Adjust path if necessary
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
 
 // Types
 interface ComponentProps {
     children: ReactNode;
     className?: string;
+}
+
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
 interface Appointment {
@@ -32,10 +36,12 @@ const Badge = ({ children, className = '' }: ComponentProps) => (
     </span>
 );
 
-export default function SlipVerifyPage() { // Renamed component
+export default function SlipVerifyPage({ params }: PageProps) {
+    // Properly unwrap the params promise
+    const unwrappedParams = use(params);
+    const { id } = unwrappedParams;
+    
     const router = useRouter();
-    const { id } = router.query; // Get the 'id' from URL query parameters
-
     const statusOptions = ['pending', 'confirmed', 'cancelled', 'completed'];
     const [status, setStatus] = useState('pending');
     const [appointment, setAppointment] = useState<Appointment | null>(null);
@@ -43,8 +49,7 @@ export default function SlipVerifyPage() { // Renamed component
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Ensure ID is available before fetching
-        if (id && typeof id === 'string') { // id can be string or string[]
+        if (id && typeof id === 'string') {
             const fetchAppointment = async () => {
                 setLoading(true);
                 setError(null);
@@ -64,17 +69,17 @@ export default function SlipVerifyPage() { // Renamed component
             };
             fetchAppointment();
         } else if (!id) {
-            setLoading(false); // If no ID, stop loading and show no data
+            setLoading(false);
             setError("No appointment ID provided in the URL.");
         }
-    }, [id]); // Re-run effect if ID changes
+    }, [id]);
 
     const handleSave = async () => {
         if (!id || typeof id !== 'string') return;
         console.log(`Saving status '${status}' for appointment ID: ${id}`);
         try {
             const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
-                method: 'PATCH', // Or 'PUT'
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },

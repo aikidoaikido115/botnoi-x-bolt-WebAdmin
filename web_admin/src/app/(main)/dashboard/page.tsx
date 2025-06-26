@@ -1,16 +1,51 @@
 'use client'
-// pages/dashboard.tsx (or app/dashboard/page.tsx for App Router)
 import { useState, useEffect, ReactNode } from 'react';
 import { Calendar, Users, Scissors, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/Card';
+import { useBooking } from '@/context/BookingContext';
 
-// Types
+// Interface สำหรับ Component Props
 interface ComponentProps {
     children: ReactNode;
     className?: string;
 }
 
+// Interface สำหรับ Service
+interface Service {
+    id: string;
+    title: string;
+    description: string;
+    store_id: string;
+    duration_minutes: number;
+    prices: number;
+    store_name: string;
+}
+
+// Interface สำหรับ Customer/User
+interface Customer {
+    id: string;
+    user_name: string;
+    tel: string;
+}
+
+// Interface สำหรับ Appointment
 interface Appointment {
+    id: string;
+    booking_time: string;
+    status: string;
+    note: string;
+    user_id: string;
+    created_at: string;
+    prices: number,
+    serviceName: string,
+    customerName: string,
+    notes: string,
+    date:string
+
+}
+
+// Interface สำหรับ Mock Appointment (ใช้กับ mock data)
+interface MockAppointment {
     id: number;
     customerName: string;
     serviceName: string;
@@ -19,13 +54,57 @@ interface Appointment {
     duration: number;
     price: number;
     status: string;
-    notes?: string | null;
+    notes: string | null;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+// Interface สำหรับ Mock Service
+interface MockService {
+    id: number;
+    name: string;
+    isActive: boolean;
+}
 
-// Mock data - in a real app, this would come from an API or database
-const mockAppointments = [
+// Interface สำหรับ Mock Customer
+interface MockCustomer {
+    id: number;
+    name: string;
+}
+
+// Interface สำหรับ Booking API Response
+interface BookingResponse {
+    id: string;
+    booking_time: string;
+    status: string;
+    note: string;
+    user_id: string;
+    created_at: string;
+    users?: {
+        id: string;
+        user_name: string;
+        tel: string;
+    };
+    booking_services?: Array<{
+        service: {
+            id: string;
+            title: string;
+            description: string;
+            store_id: string;
+            duration_minutes: number;
+            prices: number;
+            stores?: {
+                store_name: string;
+            };
+        };
+    }>;
+}
+
+// Status type union
+type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+// Mock data with proper typing
+const mockAppointments: MockAppointment[] = [
     {
         id: 1,
         customerName: 'John Doe',
@@ -72,7 +151,7 @@ const mockAppointments = [
     }
 ];
 
-const mockServices = [
+const mockServices: MockService[] = [
     { id: 1, name: 'Haircut & Styling', isActive: true },
     { id: 2, name: 'Hair Coloring', isActive: true },
     { id: 3, name: 'Beard Trim', isActive: true },
@@ -80,7 +159,7 @@ const mockServices = [
     { id: 5, name: 'Hair Wash', isActive: false }
 ];
 
-const mockCustomers = [
+const mockCustomers: MockCustomer[] = [
     { id: 1, name: 'John Doe' },
     { id: 2, name: 'Jane Smith' },
     { id: 3, name: 'Mike Johnson' },
@@ -91,18 +170,23 @@ const mockCustomers = [
     { id: 8, name: 'Tom Anderson' }
 ];
 
-// Badge Component
-const Badge = ({ children, className = '' }: ComponentProps) => (
+// Badge Component with proper typing
+const Badge: React.FC<ComponentProps> = ({ children, className = '' }) => (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>
         {children}
     </span>
 );
 
-export default function DashboardPage() {
-    const [currentDate, setCurrentDate] = useState('');
+const DashboardPage: React.FC = () => {
+    const [currentDate, setCurrentDate] = useState<string>('');
+    const [LstBooking, setLstBooking] = useState<BookingResponse[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [customers, setCustomers] = useState<Appointment[]>([]);
-    const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [services, setServices] = useState<Service[]>([]);
+    const [isLoadingAppointments, setIsLoadingAppointments] = useState<boolean>(false);
+    
+    const context = useBooking();
+    const { store_id, setStore_id } = context;
 
     useEffect(() => {
         setCurrentDate(new Date().toLocaleDateString('th-TH', {
@@ -113,89 +197,112 @@ export default function DashboardPage() {
         }));
     }, []);
 
-    const fetchAppointments = async (): Promise<void> => {
+    const formatData = async (): Promise<void> => {
+        const appointmentList: Appointment[] = [];
+        const customerMap = new Map<string, Customer>();
+        const serviceMap = new Map<string, Service>();
+
+        for (const booking of LstBooking) {
+            // Appointments
+            appointmentList.push({
+                id: booking.id,
+                booking_time: booking.booking_time,
+                status: booking.status,
+                note: booking.note,
+                user_id: booking.user_id,
+                created_at: booking.created_at,
+                prices: booking.booking_services?.[0]?.service?.prices || 0,
+                serviceName: booking.booking_services?.[0]?.service?.title || '',
+                customerName: booking.users?.user_name || '',
+                notes: booking.note || '',
+                date:booking.created_at.split('T')[0],
+            });
+
+            // Customers
+            if (booking.users && !customerMap.has(booking.user_id)) {
+                customerMap.set(booking.user_id, {
+                    id: booking.users.id,
+                    user_name: booking.users.user_name,
+                    tel: booking.users.tel,
+                });
+            }
+
+            // Services
+            for (const bs of booking.booking_services || []) {
+                const service = bs.service;
+                if (service && !serviceMap.has(service.id)) {
+                    serviceMap.set(service.id, {
+                        id: service.id,
+                        title: service.title,
+                        description: service.description,
+                        store_id: service.store_id,
+                        duration_minutes: service.duration_minutes,
+                        prices: service.prices,
+                        store_name: service.stores?.store_name || '',
+                    });
+                }
+            }
+        }
+
+        setAppointments(appointmentList);
+        setCustomers(Array.from(customerMap.values()));
+        setServices(Array.from(serviceMap.values()));
+
+        console.log(appointments);
+        
+    };
+
+    const fetchBooking = async (): Promise<void> => {
         setIsLoadingAppointments(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments`, {
+            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${store_id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
+
+            console.log('Fetching appointments for store_id:', store_id);
+
             if (response.ok) {
-                const appointmentsData = await response.json();
-                setAppointments(appointmentsData);
+                const LstData: BookingResponse[] = await response.json();
+                setLstBooking(LstData); // ✅ ให้ useEffect ที่ watch LstBooking ทำหน้าที่นี้
+                console.log('Fetched appointments:', LstData);
             } else {
                 console.error('Failed to fetch appointments');
-                // Fallback to empty array if API fails
-                setAppointments([]);
+                setLstBooking([]);
             }
         } catch (error) {
             console.error('Error fetching appointments:', error);
-            // Fallback to empty array if API fails
-            setAppointments([]);
+            setLstBooking([]);
         } finally {
             setIsLoadingAppointments(false);
         }
     };
 
-    const fetchCustomer = async (): Promise<void> => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/customer`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                const CustomersData = await response.json();
-                setCustomers(CustomersData);
-            } else {
-                console.error('Failed to fetch appointments');
-                // Fallback to empty array if API fails
-                setCustomers([]);
-            }
-        } catch (error) {
-            console.error('Error fetching appointments:', error);
-            // Fallback to empty array if API fails
-            setCustomers([]);
-        } 
-    };
 
-    const fetchServices = async (): Promise<void> => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/customer`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                const CustomersData = await response.json();
-                setCustomers(CustomersData);
-            } else {
-                console.error('Failed to fetch appointments');
-                // Fallback to empty array if API fails
-                setCustomers([]);
-            }
-        } catch (error) {
-            console.error('Error fetching appointments:', error);
-            // Fallback to empty array if API fails
-            setCustomers([]);
-        } 
-    };
 
     useEffect(() => {
-        fetchAppointments();
+        // if (store_id) {
+            fetchBooking();
+        // }
     }, []);
 
-    const todayAppointments = appointments.length > 0 
-        ? appointments.filter((apt) => apt.date === '2025-01-24')
-        : mockAppointments.filter((apt) => apt.date === '2025-01-24');
+    useEffect(() => {
+        if (LstBooking.length > 0) {
+            formatData();
+        }
+    }, [LstBooking]);
 
-    const todayRevenue = todayAppointments.reduce((sum, apt) => sum + apt.price, 0);
+    // const todayAppointments: MockAppointment[] = appointments.length > 0
+    //     ? [] // TODO: Transform real appointments to display format
+    //     : mockAppointments.filter((apt) => apt.date === '2025-01-24');
 
-    const getStatusColor = (status: String) => {
+    const today = new Date().toISOString().split('T')[0]; // ได้ "2025-06-25" แบบ YYYY-MM-DD
+    const todayAppointments = appointments.filter((apt) => apt.date === today);
+    const todayRevenue: number = todayAppointments.reduce((sum, apt) => sum + apt.prices, 0);
+
+    const getStatusColor = (status: string): string => {
         switch (status) {
             case 'confirmed':
                 return 'bg-green-100 text-green-800';
@@ -267,7 +374,7 @@ export default function DashboardPage() {
                             <Users className="h-4 w-4 text-gray-400" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-gray-900">{mockCustomers.length}</div>
+                            <div className="text-2xl font-bold text-gray-900">{customers.length || mockCustomers.length}</div>
                             <p className="text-xs text-gray-600">
                                 +5 new this week
                             </p>
@@ -281,10 +388,10 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-gray-900">
-                                {mockServices.filter(s => s.isActive).length}
+                                {services.length || mockServices.filter(s => s.isActive).length}
                             </div>
                             <p className="text-xs text-gray-600">
-                                {mockServices.length} total services
+                                {services.length || mockServices.length} total services
                             </p>
                         </CardContent>
                     </Card>
@@ -325,12 +432,12 @@ export default function DashboardPage() {
                                             )}
                                         </div>
                                         <div className="text-right space-y-1">
-                                            <p className="font-medium text-gray-900">{appointment.time}</p>
+                                            <p className="font-medium text-gray-900">{appointment.created_at}</p>
                                             <p className="text-sm text-gray-600">
-                                                {appointment.duration} min
+                                                30 min
                                             </p>
                                             <p className="text-sm font-medium text-gray-900">
-                                                ฿{appointment.price.toLocaleString()}
+                                                ฿{appointment.prices.toLocaleString()}
                                             </p>
                                         </div>
                                     </div>
@@ -342,4 +449,6 @@ export default function DashboardPage() {
             </div>
         </div>
     );
-}
+};
+
+export default DashboardPage;

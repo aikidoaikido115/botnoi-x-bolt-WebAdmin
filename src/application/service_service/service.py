@@ -72,6 +72,12 @@ class ServiceService:
 
         return [service.to_dict() for service in services]
     
+    async def get_services_id_by_title(self, title: str) -> List[str]:
+        if title is None:
+            raise ValueError("title must be provided")
+        service_ids = await self.service_repo.find_services_id_by_title(title) # เป็น list ของ str
+        return [service_id for service_id in service_ids]
+
 
     async def edit_by_id(self, service_id:str, update_data:dict) -> Optional[Service]:
         service = await self.service_repo.update_by_id(service_id, update_data)
