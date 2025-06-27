@@ -94,6 +94,10 @@ class PaymentService:
         payment = await self.payment_repo.find_by_id(id)
         return payment
     
+    async def get_payment_by_booking_id(self, booking_id: str) -> Optional[Payment]:
+        payment = await self.payment_repo.find_by_booking_id(booking_id)
+        return payment
+    
     async def edit_status_by_id(self, payment_id:str, update_data:dict) -> Optional[Payment]:
 
         print("หมดอายุยัง", await self.payment_repo.is_expired(payment_id))

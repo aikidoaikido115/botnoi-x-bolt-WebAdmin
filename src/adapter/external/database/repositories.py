@@ -216,6 +216,10 @@ class PaymentRepositoryAdapter(PaymentRepositoryInterface):
         result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
         return result.scalars().first()
     
+    async def find_by_booking_id(self, booking_id: str) -> Payment:
+        result = await self.db.execute(select(Payment).filter(Payment.booking_id == booking_id))
+        return result.scalars().first()
+    
     async def get_all(self) -> List[Payment]:
         result = await self.db.execute(select(Payment))
         return result.scalars().all()

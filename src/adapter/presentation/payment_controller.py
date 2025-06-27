@@ -36,6 +36,12 @@ async def get_payment(request: Request, db=Depends(get_db)):
     try:
         query_params = dict(request.query_params)
         payment_id = query_params.get("payment_id")
+        booking_id = query_params.get("booking_id")
+
+        if not payment_id and not booking_id:
+            raise HTTPException(status_code=400, detail="ต้องระบุ payment_id หรือ booking_id อย่างใดอย่างหนึ่ง")
+        if payment_id and booking_id:
+            raise HTTPException(status_code=400, detail="กรุณาระบุอย่างใดอย่างหนึ่ง payment_id หรือ booking_id")
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
@@ -43,7 +49,12 @@ async def get_payment(request: Request, db=Depends(get_db)):
 
         service = PaymentService(payment_repo, supabase_instance, booking_repo)
 
-        payment = await service.get_payment_by_id(payment_id)
+        # payment = await service.get_payment_by_id(payment_id)
+
+        if payment_id:
+            payment = await service.get_payment_by_id(payment_id)
+        else:
+            payment = await service.get_payment_by_booking_id(booking_id)
 
         if not payment:
             raise HTTPException(status_code=404, detail="ไม่พบข้อมูลธุรกรรม")

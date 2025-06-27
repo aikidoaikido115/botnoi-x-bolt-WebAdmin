@@ -103,6 +103,10 @@ class PaymentRepositoryInterface(ABC):
     async def find_by_id(self, payment_id: str) -> Payment:
         pass
 
+    @abstractmethod 
+    async def find_by_booking_id(self, booking_id: str) -> Payment:
+        pass
+
     @abstractmethod
     async def get_all(self) -> List[Payment]:
         pass
