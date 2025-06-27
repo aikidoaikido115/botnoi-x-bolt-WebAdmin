@@ -1,4 +1,8 @@
+'use client';
+
 import { useBooking } from '@/context/BookingContext';
+
+
 
 const BASE_URL = 'http://localhost:8000';
 
