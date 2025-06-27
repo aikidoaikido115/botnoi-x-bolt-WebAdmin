@@ -40,6 +40,7 @@ import {
 
 
 import { useBooking } from '@/context/BookingContext';
+import { log } from 'console';
 
 interface Store {
   id: string;
@@ -77,6 +78,8 @@ export default function ServicesPage() {
       headers: { 'Content-Type': 'application/json' },
     });
 
+    console.log("Response::######",response);
+    
     if (!response.ok) return null;
 
     const stores: Store[] = await response.json();
@@ -104,6 +107,7 @@ export default function ServicesPage() {
           const validServices = data.filter(service => service !== null && service !== undefined);
           setServices(validServices);
         } else {
+          console.log("Store_id:",store);
           setErrorMessage('Store not found');
         }
       } catch (error: any) {
