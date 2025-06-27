@@ -54,26 +54,56 @@ async def get_payment(request: Request, db=Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+# # ก๊อปโค้ดไปเปิดโปรเจคอื่นใช้ route นี้ที่คอมเม้นเป็น supabase ปกติ    
+# @payment_router.post("/payments/create")
+# async def create_payment(
     
+#     amount: float = Form(...),
+#     # payment_status: str = Form("Pending")
+#     slip: UploadFile = File(...),
+#     booking_id: str = Form(...),
+
+#     db=Depends(get_db)
+    
+#     ):
+#     try:
+
+#         file_name = slip.filename
+#         slip = await slip.read()
+
+#         # print("นับ", len(slip))
+#         # print(file_name)
+        
+
+#         payment_repo = PaymentRepositoryAdapter(db)
+#         supabase_instance = SupabaseAdapter()
+#         booking_repo = BookingRepositoryAdapter(db)
+
+#         service = PaymentService(payment_repo, supabase_instance, booking_repo)
+
+#         return await service.create_payment(
+#             amount,
+#             slip,
+#             file_name,
+
+#             booking_id
+#         )
+    
+#     except ValueError as e:
+#         raise HTTPException(status_code=400, detail=str(e))
+
 @payment_router.post("/payments/create")
 async def create_payment(
-    
-    amount: float = Form(...),
-    # payment_status: str = Form("Pending")
-    slip: UploadFile = File(...),
-    booking_id: str = Form(...),
-
+    request: Request,
     db=Depends(get_db)
     
     ):
     try:
-
-        file_name = slip.filename
-        slip = await slip.read()
-
-        # print("นับ", len(slip))
-        # print(file_name)
-        
+        data = await request.json()
+        amount = data.get("amount")
+        slip = data.get("slip")
+        booking_id = data.get("booking_id")
 
         payment_repo = PaymentRepositoryAdapter(db)
         supabase_instance = SupabaseAdapter()
@@ -84,7 +114,6 @@ async def create_payment(
         return await service.create_payment(
             amount,
             slip,
-            file_name,
 
             booking_id
         )

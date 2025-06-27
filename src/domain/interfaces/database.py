@@ -145,6 +145,10 @@ class BookingRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def find_booking_id_by_user_id(self, user_id: str) -> str:
+        pass
+
+    @abstractmethod
     async def get_all(self, user_id) -> List[Booking]:
         pass
     
