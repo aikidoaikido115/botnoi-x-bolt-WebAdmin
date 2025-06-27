@@ -159,7 +159,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-20">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl mt-6 font-bold">Services</h1>

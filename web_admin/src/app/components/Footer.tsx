@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className="text-center py-4 flex flex-col items-center justify-center space-y-2 bg-white mt-28.5"> 
+    <footer className="text-center py-4 flex flex-col items-center justify-center mt-67 bg-white border-1 border-gray-200"> 
       <p>Built with Bolt.new</p>
       <a
         href="https://bolt.new/"
