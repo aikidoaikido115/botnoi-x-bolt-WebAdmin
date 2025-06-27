@@ -54,7 +54,7 @@ export default function SlipVerifyPage({ params }: PageProps) {
                 setLoading(true);
                 setError(null);
                 try {
-                    const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
+                    const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${id}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch appointment with ID ${id}`);
                     }
@@ -78,7 +78,7 @@ export default function SlipVerifyPage({ params }: PageProps) {
         if (!id || typeof id !== 'string') return;
         console.log(`Saving status '${status}' for appointment ID: ${id}`);
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/bookings/edit?store_id=${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
