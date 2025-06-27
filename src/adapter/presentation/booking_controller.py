@@ -141,6 +141,8 @@ async def edit_booking(request: Request, db=Depends(get_db)):
             for key, value in data.items()
         }
 
+        update_data.pop("booking_id", None)
+
         if not update_data:
             raise HTTPException(status_code=400, detail="ไม่มีข้อมูลที่ต้องการอัปเดต")
 

@@ -12,7 +12,7 @@ interface ComponentProps {
 }
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>;
 }
 
 interface Appointment {
@@ -27,7 +27,7 @@ interface Appointment {
     notes?: string | null;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Badge Component
 const Badge = ({ children, className = '' }: ComponentProps) => (
@@ -40,7 +40,7 @@ export default function SlipVerifyPage({ params }: PageProps) {
     // Properly unwrap the params promise
     const unwrappedParams = use(params);
     const { id } = unwrappedParams;
-    
+
     const router = useRouter();
     const statusOptions = ['pending', 'confirmed', 'cancelled', 'completed'];
     const [status, setStatus] = useState('pending');
@@ -48,47 +48,54 @@ export default function SlipVerifyPage({ params }: PageProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [slipUrl, setSlipUrl] = useState<string | null>(null);
+
     useEffect(() => {
-        if (id && typeof id === 'string') {
-            const fetchAppointment = async () => {
-                setLoading(true);
-                setError(null);
-                try {
-                    const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch appointment with ID ${id}`);
-                    }
-                    const data: Appointment = await response.json();
-                    setAppointment(data);
-                    setStatus(data.status);
-                } catch (err: any) {
-                    setError(err.message || 'An error occurred while fetching data.');
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchAppointment();
-        } else if (!id) {
-            setLoading(false);
-            setError("No appointment ID provided in the URL.");
-        }
+        const fetchData = async () => {
+            try {
+                const [slipRes, bookingRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/payment?booking_id=${id}`),
+                    fetch(`${API_BASE_URL}/booking?booking_id=${id}`)
+                ]);
+
+                if (!slipRes.ok) throw new Error('Failed to fetch slip');
+                if (!bookingRes.ok) throw new Error('Failed to fetch booking');
+
+                const slipData = await slipRes.json();
+                const bookingData = await bookingRes.json();
+
+                setSlipUrl(slipData.slip);
+                setAppointment(bookingData);
+                setStatus(bookingData.status);
+            } catch (err: any) {
+                console.error('Error fetching data:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [id]);
+
 
     const handleSave = async () => {
         if (!id || typeof id !== 'string') return;
-        console.log(`Saving status '${status}' for appointment ID: ${id}`);
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
-                method: 'PATCH',
+            const response = await fetch(`${API_BASE_URL}/bookings/edit`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ status }),
+                body: JSON.stringify({
+                    booking_id: id,
+                    status: status
+                }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update status.');
+                throw new Error(errorData.detail || 'Failed to update status.');
             }
 
             alert('Status updated successfully!');
@@ -121,8 +128,8 @@ export default function SlipVerifyPage({ params }: PageProps) {
         return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
     }
 
-    if (!appointment) {
-        return <div className="min-h-screen flex items-center justify-center">Appointment not found.</div>;
+    if (!slipUrl) {
+        return <div className="min-h-screen flex items-center justify-center">Payment not found.</div>;
     }
 
     return (
@@ -133,14 +140,20 @@ export default function SlipVerifyPage({ params }: PageProps) {
                 </div>
                 <div className='flex flex-row gap-4'>
                     <Card className='w-full aspect-square'>
-                        <img
-                            src="https://thunder.in.th/wp-content/uploads/2024/06/%E0%B8%AA%E0%B8%A5%E0%B8%B4%E0%B8%9B%E0%B9%82%E0%B8%AD%E0%B8%99%E0%B9%80%E0%B8%87%E0%B8%B4%E0%B8%99.webp"
-                            alt="Slip Verification Image"
-                            className="object-cover w-full h-full rounded-md"
-                        />
+                        {slipUrl ? (
+                            <img
+                                src={slipUrl}
+                                alt="Slip Verification Image"
+                                className="object-cover w-full h-full rounded-md"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-500">
+                                No slip uploaded
+                            </div>
+                        )}
                     </Card>
                     <div className='w-full flex flex-col justify-center items-center space-y-4 ml-4'>
-                        <Card className="w-full">
+                        {/* <Card className="w-full">
                             <CardHeader>
                                 <CardTitle>Appointment Details</CardTitle>
                                 <CardDescription>Information for appointment ID: {appointment.id}</CardDescription>
@@ -160,7 +173,7 @@ export default function SlipVerifyPage({ params }: PageProps) {
                                     </Badge>
                                 </div>
                             </CardContent>
-                        </Card>
+                        </Card> */}
 
                         <div className="flex flex-col items-center space-y-4 w-full">
                             <label htmlFor="status-select" className="text-sm font-medium text-gray-700">Change Status</label>

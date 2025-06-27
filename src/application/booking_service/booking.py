@@ -96,10 +96,17 @@ class BookingService:
         booking_id = await self.booking_repo.find_booking_id_by_user_id(user_id)
         return booking_id
         
-    async def edit_by_id(self, booking_id:str, update_data:dict) -> Optional[Booking]:
-        booking = await self.booking_repo.update_by_id(booking_id, update_data)
+    async def edit_by_id(self, booking_id: str, update_data: dict):
+        booking = await self.booking_repo.find_by_id(booking_id)
+        if not booking:
+            return None
+        for key, value in update_data.items():
+            setattr(booking, key, value)  # 👈 อัปเดต field
+        self.booking_repo.db.add(booking)
+        await self.booking_repo.db.commit()  # 👈 สำคัญ!
+        await self.booking_repo.db.refresh(booking)
         return booking
-    
+        
     async def remove_by_id(self, booking_id: str):
         try:
             # ลบ BookingService ก่อน

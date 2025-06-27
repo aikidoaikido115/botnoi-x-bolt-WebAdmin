@@ -180,9 +180,9 @@ const AppointmentsPage: NextPage = () => {
   const mapStatus = (status: string): AppointmentStatus => {
     switch (status) {
       case 'not confirm': return 'pending';
-      case 'confirm': return 'confirmed';
-      case 'done': return 'completed';
-      case 'cancel': return 'cancelled';
+      case 'confirmed': return 'confirmed';
+      case 'completed': return 'completed';
+      case 'cancelled': return 'cancelled';
       default: return 'pending';
     }
   };
