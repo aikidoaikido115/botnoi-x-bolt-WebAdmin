@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy import delete
+from sqlalchemy import delete, desc
 from sqlalchemy import and_
 from domain.model_entities.database import (
     Admin,
@@ -216,6 +216,10 @@ class PaymentRepositoryAdapter(PaymentRepositoryInterface):
         result = await self.db.execute(select(Payment).filter(Payment.id == payment_id))
         return result.scalars().first()
     
+    async def find_by_booking_id(self, booking_id: str) -> Payment:
+        result = await self.db.execute(select(Payment).filter(Payment.booking_id == booking_id))
+        return result.scalars().first()
+    
     async def get_all(self) -> List[Payment]:
         result = await self.db.execute(select(Payment))
         return result.scalars().all()
@@ -312,6 +316,14 @@ class BookingRepositoryAdapter(BookingRepositoryInterface):
             )
         )
         return result.scalars().unique().all()
+    
+    async def find_booking_id_by_user_id(self, user_id: str) -> str:
+        result = await self.db.execute(
+            select(Booking.id)
+            .where(Booking.user_id == user_id)
+            .order_by(desc(Booking.created_at))
+        )
+        return result.scalars().unique().first()
     
     async def get_all(self, user_id: str) -> List[Booking]:
         result = await self.db.execute(select(Booking).where(Booking.user_id == user_id))

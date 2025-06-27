@@ -103,6 +103,10 @@ class PaymentRepositoryInterface(ABC):
     async def find_by_id(self, payment_id: str) -> Payment:
         pass
 
+    @abstractmethod 
+    async def find_by_booking_id(self, booking_id: str) -> Payment:
+        pass
+
     @abstractmethod
     async def get_all(self) -> List[Payment]:
         pass
@@ -142,6 +146,10 @@ class BookingRepositoryInterface(ABC):
 
     @abstractmethod
     async def find_by_store_id(self, store_id: str) -> list: #เป็น ลิส ธรรมดาเพราะ สิ่งที่จะได้คือรวมข้อมูลหลาย table
+        pass
+
+    @abstractmethod
+    async def find_booking_id_by_user_id(self, user_id: str) -> str:
         pass
 
     @abstractmethod
