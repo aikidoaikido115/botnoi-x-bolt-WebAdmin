@@ -226,12 +226,12 @@ export default function ServicesPage() {
                 </div>
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button onClick={() => setEditingService(null)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Service
+                        <Button onClick={() => setEditingService(null)} className='bg-black'>
+                            <Plus className="mr-2 h-4 w-4 text-white" />
+                            <p className='text-white'>Add Service</p>
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-[425px] bg-white">
                         <DialogHeader>
                             <DialogTitle>
                                 {editingService ? 'Edit Service' : 'Add New Service'}
@@ -251,6 +251,7 @@ export default function ServicesPage() {
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     placeholder="e.g., Hair Cut"
+                                    className='border-gray-400 '
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -260,6 +261,7 @@ export default function ServicesPage() {
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     placeholder="Brief description of the service"
+                                    className='border-gray-400 '
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -271,6 +273,7 @@ export default function ServicesPage() {
                                         value={formData.duration_minutes || ''}
                                         onChange={(e) => setFormData({ ...formData, duration_minutes: Number(e.target.value) || 0 })}
                                         placeholder="30"
+                                        className='border-gray-400 '
                                     />
                                 </div>
                                 <div className="grid gap-2">
@@ -281,6 +284,7 @@ export default function ServicesPage() {
                                         value={formData.prices || ''}
                                         onChange={(e) => setFormData({ ...formData, prices: Number(e.target.value) || 0 })}
                                         placeholder="150"
+                                        className='border-gray-400 '
                                     />
                                 </div>
                             </div>
@@ -289,7 +293,7 @@ export default function ServicesPage() {
                             <Button variant="outline" onClick={resetForm} disabled={submitting}>
                                 Cancel
                             </Button>
-                            <Button onClick={handleSubmit} disabled={submitting}>
+                            <Button onClick={handleSubmit} disabled={submitting} className='bg-black text-white'>
                                 {submitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -308,7 +312,7 @@ export default function ServicesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map((service) => (
-                    <Card key={service.id} className="relative">
+                    <Card key={service.id} className="rounded-lg border-none  text-card-foreground shadow-sm relative bg-white">
                         <CardHeader className="pb-3">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center space-x-2">
@@ -334,7 +338,7 @@ export default function ServicesPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">
+                            <p className="text-sm text-gray-500 mb-4">
                                 {service.description}
                             </p>
                             <div className="space-y-2">
