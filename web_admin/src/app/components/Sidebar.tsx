@@ -26,7 +26,7 @@ const sidebarItems = [
   },
   {
     title: 'Services',
-    href: '/services',
+    href: '/next_services',
     icon: ShoppingBag,
   },
   // {
