@@ -433,9 +433,7 @@ useEffect(() => {
                         <TableCell>
                           <div>
                             <div>{appointment.date}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {appointment.time}
-                            </div>
+                            
                           </div>
                         </TableCell>
                         <TableCell>{appointment.duration} min</TableCell>
