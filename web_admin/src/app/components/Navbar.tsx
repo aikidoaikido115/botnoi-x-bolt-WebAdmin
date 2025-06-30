@@ -149,9 +149,9 @@ export function Navbar() {
                     </div>
 
                     <div className="ml-auto flex items-center space-x-4">
-                        <NotificationDropdown 
+                        <NotificationDropdown
                         />
-                        
+
                         {/* Profile dropdown - visible only on medium and larger screens */}
                         <div className="hidden md:block">
                             <DropdownMenu>
@@ -180,7 +180,13 @@ export function Navbar() {
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
-                                        <Link href="/register" className="flex items-center">
+                                        <Link
+                                            onClick={() => {
+                                                localStorage.clear();
+                                            }}
+                                            href="/register"
+                                            className="flex items-center"
+                                        >
                                             <LogOut className="mr-2 h-4 w-4" />
                                             <span>Log out</span>
                                         </Link>
@@ -221,7 +227,7 @@ export function Navbar() {
 function MobileNav({ onItemClick }: { onItemClick: () => void }) {
     const navItems = [
         { href: '/profile', label: 'Profile', icon: <User className="mr-3 h-5 w-5" /> },
-        { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="mr-3 h-5 w-5" />},
+        { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="mr-3 h-5 w-5" /> },
         { href: '/appointments', label: 'Appointments', icon: <Calendar className="mr-3 h-5 w-5" /> },
         { href: '/services', label: 'Services', icon: <ShoppingBag className="mr-3 h-5 w-5" /> },
         { href: '/settings', label: 'Settings', icon: <Settings className="mr-3 h-5 w-5" /> },

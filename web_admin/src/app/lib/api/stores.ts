@@ -4,7 +4,7 @@ import { useBooking } from '@/context/BookingContext';
 
 
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://mybooking.ngrok.pizza';
 
 export interface Store {
   id: string;

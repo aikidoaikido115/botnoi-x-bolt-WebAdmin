@@ -27,7 +27,7 @@ interface Appointment {
     notes?: string | null;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 
 // Badge Component
 const Badge = ({ children, className = '' }: ComponentProps) => (
@@ -37,6 +37,7 @@ const Badge = ({ children, className = '' }: ComponentProps) => (
 );
 
 export default function SlipVerifyPage({ params }: PageProps) {
+    const API_BASE_URL ='https://mybooking.ngrok.pizza';
     // Properly unwrap the params promise
     const unwrappedParams = use(params);
     const { id } = unwrappedParams;

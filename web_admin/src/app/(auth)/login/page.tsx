@@ -75,7 +75,7 @@ export default function LoginPage(): React.JSX.Element {
 
         try {
             // Call FastAPI admin login endpoint
-            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
+            const API_BASE_URL = 'https://mybooking.ngrok.pizza';
             const response = await fetch(`${API_BASE_URL}/admins/login`, {
                 method: 'POST',
                 headers: {
@@ -98,6 +98,7 @@ export default function LoginPage(): React.JSX.Element {
             if (data.access_token) {
                 
                 setStore_id(data.store_id);
+                localStorage.setItem('store_id', data.store_id);
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('token_type', data.token_type || 'bearer');
             }

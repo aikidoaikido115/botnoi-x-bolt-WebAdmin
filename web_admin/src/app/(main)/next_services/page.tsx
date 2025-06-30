@@ -43,7 +43,7 @@ interface Store {
     created_at: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
+
 
 export default function ServicesPage() {
     const [services, setServices] = useState<Service[]>([]);
@@ -59,9 +59,9 @@ export default function ServicesPage() {
         description: '',
         store_id: '',
     });
-    
+    const API_BASE_URL ='https://mybooking.ngrok.pizza';
     const context = useBooking();
-    const { store_id } = context;
+    const { store_id,setStore_id } = context;
 
     const handleSubmit = async () => {
         setSubmitting(true);
@@ -200,6 +200,14 @@ export default function ServicesPage() {
         }
     }
 
+
+    useEffect(() => {
+        const savedStoreId = localStorage.getItem('store_id');
+        if (savedStoreId) {
+            setStore_id(savedStoreId);
+        }
+    }, []);
+    
     useEffect(() => {
         if (store_id) {
             fetchStore_Services();

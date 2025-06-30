@@ -25,9 +25,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/table';
-import {  Search, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
 
 // Type definitions
 interface Appointment {
@@ -148,7 +147,7 @@ const AppointmentsPage: NextPage = () => {
   const appointmentsPerPage = 7;
   const context = useBooking();
   const { store_id, setStore_id } = context;
-
+  const API_BASE_URL = 'https://mybooking.ngrok.pizza';
   const fetchAppointmentsFromAPI = async () => {
     try {
 
@@ -187,13 +186,31 @@ const AppointmentsPage: NextPage = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const loadAppointments = async () => {
+  //     const savedStoreId = localStorage.getItem('store_id');
+  //     if (savedStoreId) {
+  //       setStore_id(savedStoreId);
+  //     }
+  //     const results = await fetchAppointmentsFromAPI();
+  //     setAppointments(results);
+  //   };
+  //   loadAppointments();
+  // }, []);
+
+
   useEffect(() => {
-    const loadAppointments = async () => {
-      const results = await fetchAppointmentsFromAPI();
-      setAppointments(results);
-    };
-    loadAppointments();
-  }, []);
+  const savedStoreId = localStorage.getItem('store_id');
+  if (savedStoreId) {
+    setStore_id(savedStoreId);
+  }
+}, []);
+
+useEffect(() => {
+  if (store_id) {
+    fetchAppointmentsFromAPI().then(setAppointments);
+  }
+}, [store_id]);
 
 
 
@@ -446,7 +463,7 @@ const AppointmentsPage: NextPage = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            
+
                             <Button
                               variant="outline"
                               size="sm"

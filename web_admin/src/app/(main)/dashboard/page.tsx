@@ -40,7 +40,7 @@ interface Appointment {
     serviceName: string,
     customerName: string,
     notes: string,
-    date:string
+    date: string
 
 }
 
@@ -101,7 +101,7 @@ interface BookingResponse {
 // Status type union
 type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
+
 
 // Mock data with proper typing
 const mockAppointments: MockAppointment[] = [
@@ -184,7 +184,7 @@ const DashboardPage: React.FC = () => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [isLoadingAppointments, setIsLoadingAppointments] = useState<boolean>(false);
-    
+    const API_BASE_URL = 'https://mybooking.ngrok.pizza';
     const context = useBooking();
     const { store_id, setStore_id } = context;
 
@@ -215,7 +215,7 @@ const DashboardPage: React.FC = () => {
                 serviceName: booking.booking_services?.[0]?.service?.title || '',
                 customerName: booking.users?.user_name || '',
                 notes: booking.note || '',
-                date:booking.created_at.split('T')[0],
+                date: booking.created_at.split('T')[0],
             });
 
             // Customers
@@ -249,13 +249,13 @@ const DashboardPage: React.FC = () => {
         setServices(Array.from(serviceMap.values()));
 
         console.log(appointments);
-        
+
     };
 
     const fetchBooking = async (): Promise<void> => {
         setIsLoadingAppointments(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/booking-appointments?store_id=${store_id}`, {
+            const response = await fetch(`https://mybooking.ngrok.pizza/booking-appointments?store_id=${store_id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -279,14 +279,19 @@ const DashboardPage: React.FC = () => {
             setIsLoadingAppointments(false);
         }
     };
-
-
+    
+    useEffect(() => {
+        const savedStoreId = localStorage.getItem('store_id');
+        if (savedStoreId) {
+            setStore_id(savedStoreId);
+        }
+    }, []);
 
     useEffect(() => {
-        // if (store_id) {
-            fetchBooking();
-        // }
-    }, []);
+        if (store_id) {
+        fetchBooking();
+        }
+    }, [store_id]);
 
     useEffect(() => {
         if (LstBooking.length > 0) {
