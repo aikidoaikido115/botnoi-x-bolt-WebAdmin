@@ -101,7 +101,7 @@ interface BookingResponse {
 // Status type union
 type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
 
 // Mock data with proper typing
 const mockAppointments: MockAppointment[] = [

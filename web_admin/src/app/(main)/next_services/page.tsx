@@ -43,7 +43,7 @@ interface Store {
     created_at: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
 
 export default function ServicesPage() {
     const [services, setServices] = useState<Service[]>([]);

@@ -27,7 +27,7 @@ import {
 } from '@/app/components/ui/table';
 import {  Search, ChevronLeft, ChevronRight, Filter, X } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
 
 // Type definitions
 interface Appointment {

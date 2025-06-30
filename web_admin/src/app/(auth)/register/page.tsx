@@ -53,7 +53,7 @@ export default function RegisterPage(): React.JSX.Element {
     const {store_id , setStore_id} = context;
     
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
 
     // Function to fetch stores from database
     const fetchStores = async (): Promise<void> => {

@@ -75,7 +75,7 @@ export default function LoginPage(): React.JSX.Element {
 
         try {
             // Call FastAPI admin login endpoint
-            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mybooking.ngrok.pizza';
             const response = await fetch(`${API_BASE_URL}/admins/login`, {
                 method: 'POST',
                 headers: {
